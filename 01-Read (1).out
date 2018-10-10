@@ -1,0 +1,7 @@
+token: READ           lexical unit: READ
+token: (              lexical unit: LPAREN
+token: b              lexical unit: VARNAME
+token: )              lexical unit: RPAREN
+
+Identifiers
+b	1
