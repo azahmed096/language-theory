@@ -43,42 +43,42 @@ Identifier     = {Alpha}{AlphaNumeric}*
 
 %%// Identification of tokens
 <YYINITIAL>{
-	"BEGINPROG"         {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.BEGINPROG, yyline, yycolumn);}
-	"ENDPROG"           {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.ENDPROG, yyline, yycolumn);}
-	"VARIABLES"         {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.VARIABLES, yyline, yycolumn);}
-	{EndLine}           {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.ENDLINE, yyline, yycolumn);}
-	{ProgName}          {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.PROGNAME, yyline, yycolumn);}
-	","                 {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.COMMA, yyline, yycolumn);}
-	{VarName}			{System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.VARNAME, yyline, yycolumn);}
-	":="                {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.ASSIGN, yyline, yycolumn);}
-	{Number}            {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.NUMBER, yyline, yycolumn);}
-	"("                 {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.LPAREN, yyline, yycolumn);}
-	")"                 {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.RPAREN, yyline, yycolumn);}
-	"-"                 {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.MINUS, yyline, yycolumn);}
-	"+"                 {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.PLUS, yyline, yycolumn);}
-	"*"                 {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.TIMES, yyline, yycolumn);}
-	"/"                 {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.DIVIDE, yyline, yycolumn);}
-	"IF"                {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.IF, yyline, yycolumn);}
-	"THEN"              {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.THEN, yyline, yycolumn);}
-	"ENDIF"             {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.ENDIF, yyline, yycolumn);}
-	"ELSE"              {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.ELSE, yyline, yycolumn);}
-	"NOT"               {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.NOT, yyline, yycolumn);}
-	"AND"               {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.AND, yyline, yycolumn);}
-	"OR"                {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.OR, yyline, yycolumn);}
-	"="                 {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.EQ, yyline, yycolumn);}
-	">="                {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.GEQ, yyline, yycolumn);}
-	">"                 {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.GT, yyline, yycolumn);}
-	"<="                {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.LEQ, yyline, yycolumn);}
-	"<"                 {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.LT, yyline, yycolumn);}
-	"<>"                {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.NEQ, yyline, yycolumn);}
-	"WHILE"             {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.WHILE, yyline, yycolumn);}
-	"DO"                {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.DO, yyline, yycolumn);}
-	"ENDWHILE"			{System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.ENDWHILE, yyline, yycolumn);}
-	"FOR"               {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.FOR, yyline, yycolumn);}
-	"TO"                {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.TO, yyline, yycolumn);}
-	"ENDFOR"			{System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.ENDFOR, yyline, yycolumn);}
-	"PRINT"             {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.PRINT, yyline, yycolumn);}
-	"READ"              {System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.READ, yyline, yycolumn);}
+	"BEGINPROG"         {System.out.println(new Symbol(LexicalUnit.BEGINPROG, yyline, yycolumn, yytext()));}
+	"ENDPROG"           {System.out.println(new Symbol(LexicalUnit.ENDPROG, yyline, yycolumn, yytext()));}
+	"VARIABLES"         {System.out.println(new Symbol(LexicalUnit.VARIABLES, yyline, yycolumn, yytext()));}
+	{EndLine}           {System.out.println(new Symbol(LexicalUnit.ENDLINE, yyline, yycolumn, "\\n"));}
+	{ProgName}          {System.out.println(new Symbol(LexicalUnit.PROGNAME, yyline, yycolumn, yytext()));}
+	","                 {System.out.println(new Symbol(LexicalUnit.COMMA, yyline, yycolumn, yytext()));}
+	{VarName}			{System.out.println(new Symbol(LexicalUnit.VARNAME, yyline, yycolumn, yytext()));}
+	":="                {System.out.println(new Symbol(LexicalUnit.ASSIGN, yyline, yycolumn, yytext()));}
+	{Number}            {System.out.println(new Symbol(LexicalUnit.NUMBER, yyline, yycolumn, yytext()));}
+	"("                 {System.out.println(new Symbol(LexicalUnit.LPAREN, yyline, yycolumn, yytext()));}
+	")"                 {System.out.println(new Symbol(LexicalUnit.RPAREN, yyline, yycolumn, yytext()));}
+	"-"                 {System.out.println(new Symbol(LexicalUnit.MINUS, yyline, yycolumn, yytext()));}
+	"+"                 {System.out.println(new Symbol(LexicalUnit.PLUS, yyline, yycolumn, yytext()));}
+	"*"                 {System.out.println(new Symbol(LexicalUnit.TIMES, yyline, yycolumn, yytext()));}
+	"/"                 {System.out.println(new Symbol(LexicalUnit.DIVIDE, yyline, yycolumn, yytext()));}
+	"IF"                {System.out.println(new Symbol(LexicalUnit.IF, yyline, yycolumn, yytext()));}
+	"THEN"              {System.out.println(new Symbol(LexicalUnit.THEN, yyline, yycolumn, yytext()));}
+	"ENDIF"             {System.out.println(new Symbol(LexicalUnit.ENDIF, yyline, yycolumn, yytext()));}
+	"ELSE"              {System.out.println(new Symbol(LexicalUnit.ELSE, yyline, yycolumn, yytext()));}
+	"NOT"               {System.out.println(new Symbol(LexicalUnit.NOT, yyline, yycolumn, yytext()));}
+	"AND"               {System.out.println(new Symbol(LexicalUnit.AND, yyline, yycolumn, yytext()));}
+	"OR"                {System.out.println(new Symbol(LexicalUnit.OR, yyline, yycolumn, yytext()));}
+	"="                 {System.out.println(new Symbol(LexicalUnit.EQ, yyline, yycolumn, yytext()));}
+	">="                {System.out.println(new Symbol(LexicalUnit.GEQ, yyline, yycolumn, yytext()));}
+	">"                 {System.out.println(new Symbol(LexicalUnit.GT, yyline, yycolumn, yytext()));}
+	"<="                {System.out.println(new Symbol(LexicalUnit.LEQ, yyline, yycolumn, yytext()));}
+	"<"                 {System.out.println(new Symbol(LexicalUnit.LT, yyline, yycolumn, yytext()));}
+	"<>"                {System.out.println(new Symbol(LexicalUnit.NEQ, yyline, yycolumn, yytext()));}
+	"WHILE"             {System.out.println(new Symbol(LexicalUnit.WHILE, yyline, yycolumn, yytext()));}
+	"DO"                {System.out.println(new Symbol(LexicalUnit.DO, yyline, yycolumn, yytext()));}
+	"ENDWHILE"			{System.out.println(new Symbol(LexicalUnit.ENDWHILE, yyline, yycolumn, yytext()));}
+	"FOR"               {System.out.println(new Symbol(LexicalUnit.FOR, yyline, yycolumn, yytext()));}
+	"TO"                {System.out.println(new Symbol(LexicalUnit.TO, yyline, yycolumn, yytext()));}
+	"ENDFOR"			{System.out.println(new Symbol(LexicalUnit.ENDFOR, yyline, yycolumn, yytext()));}
+	"PRINT"             {System.out.println(new Symbol(LexicalUnit.PRINT, yyline, yycolumn, yytext()));}
+	"READ"              {System.out.println(new Symbol(LexicalUnit.READ, yyline, yycolumn, yytext()));}
 	// ? "EOS"			{System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.EOS, yyline, yycolumn);}
 	"//"				{yybegin(LINE_COMMENT);}
 	"/*"				{yybegin(COMMENT);}
@@ -86,12 +86,12 @@ Identifier     = {Alpha}{AlphaNumeric}*
 }
 
 <LINE_COMMENT> {
-	{EndLine} { yybegin(YYINITIAL);System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.ENDLINE, yyline, yycolumn);}
+	{EndLine} { System.out.println(new Symbol(LexicalUnit.ENDLINE, yyline, yycolumn, "\\n"));yybegin(YYINITIAL);}
 	. {}
 }
 
 <COMMENT> {
-	"*/" 				{yybegin(COMMENT);}
+	"*/" 				{yybegin(YYINITIAL);}
 	. {}
 	
 }
