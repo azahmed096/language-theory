@@ -1,3 +1,6 @@
+import java.util.Map;
+import java.util.TreeMap;
+
 %%// Options of the scanner
 
 %class Lexer5	//Name
@@ -7,9 +10,24 @@
 %type Symbol  //Says that the return type is Symbol
 %standalone		//Standalone mode
 
+%{
+	private Map<String, Integer> identifiers = new TreeMap();
+
+	private void found_identifier(String name, int line){
+		if (!identifiers.containsKey(name)){
+			// Line numbers start with 0
+			identifiers.put(name, line + 1);
+		}
+	}
+%}
+
 // Return value of the program
 %eofval{
-	return new Symbol(LexicalUnit.EOS, yyline, yycolumn);
+	System.out.println("\nIdentifiers");
+	for (Map.Entry entry: identifiers.entrySet()){
+		System.out.println(entry.getKey() + "\t" + entry.getValue());
+	}
+	return null;
 %eofval}
 
 // Extended Regular Expressions
@@ -38,6 +56,7 @@ Decimal        = \.[0-9]*
 Exponent       = [eE]{Integer}
 Real           = {Integer}{Decimal}?{Exponent}?
 Identifier     = {Alpha}{AlphaNumeric}*
+Ignore 		   = " " | "\t"
 
 %xstate YYINITIAL, COMMENT, LINE_COMMENT
 
@@ -49,7 +68,10 @@ Identifier     = {Alpha}{AlphaNumeric}*
 	{EndLine}           {System.out.println(new Symbol(LexicalUnit.ENDLINE, yyline, yycolumn, "\\n"));}
 	{ProgName}          {System.out.println(new Symbol(LexicalUnit.PROGNAME, yyline, yycolumn, yytext()));}
 	","                 {System.out.println(new Symbol(LexicalUnit.COMMA, yyline, yycolumn, yytext()));}
-	{VarName}			{System.out.println(new Symbol(LexicalUnit.VARNAME, yyline, yycolumn, yytext()));}
+	{VarName}			{
+		System.out.println(new Symbol(LexicalUnit.VARNAME, yyline, yycolumn, yytext()));
+		found_identifier(yytext(), yyline);
+	}
 	":="                {System.out.println(new Symbol(LexicalUnit.ASSIGN, yyline, yycolumn, yytext()));}
 	{Number}            {System.out.println(new Symbol(LexicalUnit.NUMBER, yyline, yycolumn, yytext()));}
 	"("                 {System.out.println(new Symbol(LexicalUnit.LPAREN, yyline, yycolumn, yytext()));}
@@ -82,16 +104,17 @@ Identifier     = {Alpha}{AlphaNumeric}*
 	// ? "EOS"			{System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.EOS, yyline, yycolumn);}
 	"//"				{yybegin(LINE_COMMENT);}
 	"/*"				{yybegin(COMMENT);}
-	. {}
+	{Ignore}			{}
+	.					{System.out.println("Unexpected token::" + yytext());}
 }
 
 <LINE_COMMENT> {
-	{EndLine} { System.out.println(new Symbol(LexicalUnit.ENDLINE, yyline, yycolumn, "\\n"));yybegin(YYINITIAL);}
+	/*System.out.println(new Symbol(LexicalUnit.ENDLINE, yyline, yycolumn, "\\n"));*/
+	{EndLine} { yybegin(YYINITIAL);}
 	. {}
 }
 
 <COMMENT> {
 	"*/" 				{yybegin(YYINITIAL);}
-	. {}
-	
+	.|{EndLine} {}
 }
