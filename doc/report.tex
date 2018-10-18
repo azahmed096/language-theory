@@ -1,5 +1,94 @@
 \documentclass[12pt]{article}
+\title{Projet 1 Super-Fortran Part 1}
 \begin{document}
-H ello world!
-$Hello world!$ %math mode 
+
+\section{Introduction}
+In this project we were requested to design and write a compiler for Super-Fortran. It is a very simple 
+imperative language. The project divided in 3 parts and for this first part. we had to produce 
+the lexical analyser of the compiler.
+
+The lexical analyser has been generated using JFlex which take as input a specification (.flex file)
+ with a set of regular expression and corresponding actions. % à changer
+
+\section{Regular expressions}
+
+\begin{description}
+    
+    
+    \item[\texttt{AlphaUpperCase = [A-Z]}]
+    Here we define a macro of a range that match any upper letter from A to Z.
+    
+    \item[\texttt{AlphaLowerCase = [a-z]}]
+    This is the same as the previous one but for lowers letters.
+    
+    \item[\texttt{Alpha          = \{AlphaUpperCase\}|\{AlphaLowerCase\}}]
+    The language of alpha define the union of the languages of the 2 previous macros.
+    
+    \item[\texttt{Numeric        = [0-9]}]
+    The range of all decimals digits that will be useful for matching numbers.
+    
+    \item[\texttt{AlphaNumeric	 = \{Alpha\}|\{Numeric\}}]
+    A macro that matches all alphanumerics characters
+    
+    \item[\texttt{NZero          = [1-9]}]
+    We need non zero digit macro because a number literal can't begin with 0.
+    
+    \item[\texttt{Zero           = "0"}]
+    We need a macro for matching single zero which is the only number that begins with 0.
+    
+    \item[\texttt{VarName 	   = \{AlphaLowerCase\}(\{Numeric\}|\{AlphaLowerCase\})*}]
+    VarName is the macro that define a variable. That start with a lower case characters and contains only digits and 
+    lower case characters.
+    
+    \item[\texttt{EndLine        = "\textbackslash n"}]
+    This macro exist because it will be repeated severals time and we want to avoid magic constants.
+    
+    \item[\texttt{Number         = \{Zero\}|(\{NZero\}\{Numeric\}*)}]
+    A number is a zero or a non zero digit followed by an arbitrary number of digits.
+    
+    
+    \item[\texttt{ProgName       =  \{AlphaUpperCase\}\{AlphaNumeric\}*(\{AlphaLowerCase\}|\{Numeric\})\{AlphaNumeric\}*}]
+    A program name start with an upper case characters and is said to be an non upper case word. 
+    The choice of the meaning of a non upper case word will be exlpained in the next section.
+    
+    \item[\texttt{BeginComment   = "/*"}] The begin of a multi line comment.
+
+    \item[\texttt{Ignore 		   = " " | "\textbackslash t"}] The ignored charachters by the lexer. 
+
+\end{description}
+
+\section{Explanation of choices and hypotheses}
+
+\subsection{Macro definitions}
+We decided to use macros everywhere except when we face one characters or a concatenation of two characters
+that will not be reused in the flex file. Because macros make the code more readable and the changes 
+in the input langauge easier.
+
+\subsection{Unexpected tokens}
+Unexpected tokens are words that does not match with any regular expression. We consider that they
+should not be ignored by the lexical analyser that's why an exception is thrown. And for this reason
+we defined a macro \texttt{Ignore} for charachters that should be ignored and are not a part of 
+the grammar of super fortran.
+
+\subsection{Non upper case word}
+For the matching of the Progname we had two choices on how to interpret a non upper case word.
+First we can define it as word that contains a least one lower case charachters. Or the other option
+is a word that contains at least one digit or one lower case charachters.
+
+We took the second one because a word that contains a digit can't be confused with a keyword.
+
+
+
+\section{Bonus question}
+The difficulty with nested comments problem was to find a regular expression that recognize them.
+In fact the nested comments problem is similar to the problem of opening/closing parenthese which is not a 
+regular language. For this reason the solution that we found was to use
+
+Regular expression are not sufficient to handle nested comment that's why we needed 
+
+\section{Tests files desciption}
+
+
+\section{Conclusion}
+
 \end{document}

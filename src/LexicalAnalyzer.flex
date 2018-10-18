@@ -5,7 +5,7 @@
 %line         //Use line counter (yyline variable)
 %column       //Use character counter by line (yycolumn variable)
 %type Symbol  //Says that the return type is Symbol
-%standalone		//Standalone mode
+
 
 %{
 	boolean isEOF(){
@@ -29,7 +29,6 @@ Numeric        = [0-9]
 AlphaNumeric	 = {Alpha}|{Numeric}
 Zero           = "0"
 NZero          = [1-9]
-Minus          = "-"
 
 VarName 	   = {AlphaLowerCase}({Numeric}|{AlphaLowerCase})*
 // ProgName B9NJOUR est accepté ou obligé une lettre miniscule?
@@ -39,13 +38,12 @@ ProgName       = {AlphaUpperCase}{AlphaNumeric}*({AlphaLowerCase}|{Numeric}){Alp
 // ProgName       = {AlphaUpperCase}{AlphaNumeric}*{AlphaLowerCase}{AlphaNumeric}*
 EndLine        = "\n"
 Number         = {Zero}|({NZero}{Numeric}*)
+BeginComment   = "/*"
+
 // OLD
 Sign           = [+-]
 Integer        = {Sign}?(([1-9][0-9]*)|0)
 Decimal        = \.[0-9]*
-Exponent       = [eE]{Integer}
-Real           = {Integer}{Decimal}?{Exponent}?
-Identifier     = {Alpha}{AlphaNumeric}*
 Ignore 		   = " " | "\t"
 
 %xstate YYINITIAL, COMMENT, LINE_COMMENT
@@ -92,7 +90,7 @@ Ignore 		   = " " | "\t"
 	"READ"              {return new Symbol(LexicalUnit.READ, yyline, yycolumn, yytext());}
 	// ? "EOS"			{System.out.println("token: "+ yytext()); return new Symbol(LexicalUnit.EOS, yyline, yycolumn);}
 	"//"				{yybegin(LINE_COMMENT);}
-	"/*"				{yybegin(COMMENT);}
+	{BeginComment}				{yybegin(COMMENT);}
 	{Ignore}			{}
 	.					{throw new UnexpectedTokenException("Unexpected token");}
 }
@@ -105,6 +103,6 @@ Ignore 		   = " " | "\t"
 
 <COMMENT> {
 	"*/" 				{yybegin(YYINITIAL);}
-	"/*"				{throw new UnexpectedTokenException("Nested comments are forbidden");}
+	{BeginComment}				{throw new UnexpectedTokenException("Nested comments are forbidden");}
 	.|{EndLine} {}
 }
