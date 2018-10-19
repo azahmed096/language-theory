@@ -1,5 +1,7 @@
 \documentclass[12pt]{article}
 \title{Projet 1 Super-Fortran Part 1}
+
+\usepackage[htt]{hyphenat}
 \begin{document}
 
 \section{Introduction}
@@ -15,19 +17,19 @@ The lexical analyser has been generated using JFlex which take as input a specif
 \begin{description}
     
     
-    \item[\texttt{AlphaUpperCase = [A-Z]}]
+    \item[\texttt{Upper = [A-Z]}]
     Here we define a macro of a range that match any upper letter from A to Z.
     
-    \item[\texttt{AlphaLowerCase = [a-z]}]
+    \item[\texttt{Lower = [a-z]}]
     This is the same as the previous one but for lowers letters.
     
-    \item[\texttt{Alpha          = \{AlphaUpperCase\}|\{AlphaLowerCase\}}]
+    \item[\texttt{Alpha          = \{Upper\}|\{Lower\}}]
     The language of alpha define the union of the languages of the 2 previous macros.
     
     \item[\texttt{Numeric        = [0-9]}]
     The range of all decimals digits that will be useful for matching numbers.
     
-    \item[\texttt{AlphaNumeric	 = \{Alpha\}|\{Numeric\}}]
+    \item[\texttt{AlphaNum	 = \{Alpha\}|\{Numeric\}}]
     A macro that matches all alphanumerics characters
     
     \item[\texttt{NZero          = [1-9]}]
@@ -36,7 +38,7 @@ The lexical analyser has been generated using JFlex which take as input a specif
     \item[\texttt{Zero           = "0"}]
     We need a macro for matching single zero which is the only number that begins with 0.
     
-    \item[\texttt{VarName 	   = \{AlphaLowerCase\}(\{Numeric\}|\{AlphaLowerCase\})*}]
+    \item[\texttt{VarName 	   = \{Lower\}(\{Numeric\}|\{Lower\})*}]
     VarName is the macro that define a variable. That start with a lower case characters and contains only digits and 
     lower case characters.
     
@@ -46,8 +48,7 @@ The lexical analyser has been generated using JFlex which take as input a specif
     \item[\texttt{Number         = \{Zero\}|(\{NZero\}\{Numeric\}*)}]
     A number is a zero or a non zero digit followed by an arbitrary number of digits.
     
-    
-    \item[\texttt{ProgName       =  \{AlphaUpperCase\}\{AlphaNumeric\}*(\{AlphaLowerCase\}|\{Numeric\})\{AlphaNumeric\}*}]
+    \item[\texttt{ProgName =  \{Upper\}\{AlphaNum\}*(\{Lower\}|\{Numeric\})\{AlphaNum\}*}]
     A program name start with an upper case characters and is said to be an non upper case word. 
     The choice of the meaning of a non upper case word will be exlpained in the next section.
     
@@ -82,9 +83,16 @@ We took the second one because a word that contains a digit can't be confused wi
 \section{Bonus question}
 The difficulty with nested comments problem was to find a regular expression that recognize them.
 In fact the nested comments problem is similar to the problem of opening/closing parenthese which is not a 
-regular language. For this reason the solution that we found was to use
+regular language. For this reason the solution that we found was to use jflex states in which we can put
+java code.
 
-Regular expression are not sufficient to handle nested comment that's why we needed 
+
+Nested comment requires to count (or to use a stack), opening and closing strings for comment. 
+With a java integer as a counter that increment when we find the opening sequence and decrement
+on closing sequence we can track if we are
+currently inside a comment. It is the case when the counter is positive. When the counter is equal to 0
+we are outside comments and when the counter is negative there is more closing sequences that needed and this 
+should be considered as a syntax error.
 
 \section{Tests files desciption}
 
