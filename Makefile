@@ -13,10 +13,9 @@ jar: compile
 	cd $(CLASS_PATH) && jar cfe $(DIST_DIR)/part1.jar Main *.class
 
 report: $(DOC_DIR)/report.pdf
-	cd $(DOC_DIR) && xelatex report.tex
 
 $(DOC_DIR)/report.pdf: $(DOC_DIR)/report.tex
-	xelatex $? -output-directory=/home/ahmed/language-theory/$(DOC_DIR)/
+	cd $(DOC_DIR) && xelatex report.tex
 
 compile: $(CLASS_PATH)/UnexpectedTokenException.class $(CLASS_PATH)/LexicalUnit.class $(CLASS_PATH)/Symbol.class $(CLASS_PATH)/Lexer5.class $(CLASS_PATH)/Main.class
 
