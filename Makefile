@@ -7,7 +7,7 @@ TEST_FILE=00-Factorial.sf
 DIST_DIR=$(shell readlink -f ./dist)
 
 
-all: jar report
+all: jar report javadoc
 
 jar: compile
 	cd $(CLASS_PATH) && jar cfe $(DIST_DIR)/part1.jar Main *.class
@@ -33,4 +33,7 @@ $(CLASS_PATH)/%.class: $(SOURCE_DIR)/%.java $(CLASS_PATH)/
 
 clean:
 	rm $(CLASS_PATH)/*.class $(DOC_DIR)/report.aux $(DOC_DIR)/report.log
+
+javadoc:
+	cd $(SOURCE_DIR) && javadoc -d $(DOC_DIR) *.java
 
