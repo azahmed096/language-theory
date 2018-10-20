@@ -1,7 +1,5 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 public class Main {
 
@@ -22,7 +20,7 @@ public class Main {
 					return;
 				}
 			}
-			Map<Object, Integer> identifiers = new TreeMap();
+			SymbolTable table = new SymbolTable();
 			List<Symbol> symboles = new ArrayList<>();
 			for (int i = firstFilePos; i < argv.length; i++) {
 				Lexer5 scanner = null;
@@ -40,8 +38,8 @@ public class Main {
 							continue;
 						}
 						symboles.add(symbol);
-						if (symbol.getType() == LexicalUnit.VARNAME && !identifiers.containsKey(symbol.getValue())){
-							identifiers.put(symbol.getValue(), symbol.getLine() + 1);
+						if (symbol.getType() == LexicalUnit.VARNAME){
+							table.foundIdentifier(symbol);
 						}
 					}
 				} catch (java.io.FileNotFoundException e) {
@@ -59,10 +57,7 @@ public class Main {
 			for (Symbol symbol: symboles){
 				System.out.println(symbol);
 			}
-			System.out.println("\nIdentifiers");
-			for (Map.Entry entry: identifiers.entrySet()){
-				System.out.println(entry.getKey() + "\t" + entry.getValue());
-			}
+			System.out.println(table);
 		}
 
 	

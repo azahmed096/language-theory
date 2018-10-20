@@ -1,18 +1,20 @@
 \documentclass[12pt]{article}
-\title{Projet 1 Super-Fortran Part 1}
-
+\title{INFO-F-403: Project Super-Fortran Part 1 Lexer analyser}
+\author{Sefu Kevin and Abou Zaidi Ahmed}
 \usepackage[htt]{hyphenat}
 \begin{document}
-
+\maketitle
 \section{Introduction}
 In this project we were requested to design and write a compiler for Super-Fortran. It is a very simple 
-imperative language. The project divided in 3 parts and for this first part. we had to produce 
+imperative language. The project is divided in 3 parts and for this first part. We had to produce 
 the lexical analyser of the compiler.
 
-The lexical analyser has been generated using JFlex which take as input a specification (.flex file)
- with a set of regular expression and corresponding actions. % à changer
+The lexical analyser has been generated using JFlex which is a tool that take a specification (.flex file)
+as input with a set of regular expression. And with each one we can assiocate java code that will
+be executed in each match.
 
 \section{Regular expressions}
+
 
 \begin{description}
     
@@ -66,8 +68,10 @@ that will not be reused in the flex file. Because macros make the code more read
 in the input langauge easier.
 
 \subsection{Unexpected tokens}
-Unexpected tokens are words that does not match with any regular expression. We consider that they
-should not be ignored by the lexical analyser that's why an exception is thrown. And for this reason
+Unexpected tokens are words that does not match with any regular expression. 
+We consider that they
+should not be simply ignored by the lexical analyser that's why an exception is thrown. 
+And for this reason
 we defined a macro \texttt{Ignore} for charachters that should be ignored and are not a part of 
 the grammar of super fortran.
 
@@ -94,9 +98,24 @@ currently inside a comment. It is the case when the counter is positive. When th
 we are outside comments and when the counter is negative there is more closing sequences that needed and this 
 should be considered as a syntax error.
 
+We did not implement nested comment support becuase they are forbidden.
+
 \section{Tests files desciption}
+
+\begin{description}
+    \item[\texttt{01-Read.sf} and \texttt{00-Factorial.sf}] Those two is provided by the teacher assistant.   
+    \item[\texttt{02-Factorial-nested-comment.sf}] This file contains nested comments to ensure that an error is raised.
+    \item[\texttt{03-Fibonacci.sf}] This file contains an implementation of fibonacci number.
+    \item[\texttt{04-Factorial-unexpectedword.sf}] This file contains an upper case word that is not a keyword. An unexpected token will be raised on reading.
+\end{description}
 
 
 \section{Conclusion}
+
+As we said in the introduction we implemented a lexer for the Super-Fortran programming language.
+
+During this project we learned how to build a lexical analyser.
+It allowed us to learn more about the first step of a compiler and to understand deeply how it works.
+We also learned that we can build a lexer without writing the tokenization algorithm.
 
 \end{document}
