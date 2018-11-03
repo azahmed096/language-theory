@@ -1,0 +1,64 @@
+<Program>       -> BEGINPROG [ProgName] [EndLine] <Variables> <Code> ENDPROG
+
+<Variables>     -> VARIABLES <VarList> [EndLine]
+                -> epsilon
+
+<VarList>       -> [VarName], <VarList>
+                -> [VarName]
+
+<Code>          -> <Instruction> [EndLine] <Code> # pk gauche pk droite code??
+                -> epsilon
+
+<Instruction>   -> <Assign>
+                -> <If>
+                -> <While>
+                -> <For>
+                -> <Print>
+                -> <Read>
+
+<Assign>        -> [VarName] := <ExprArith>
+
+<ExprArith>     -> ( <ExprArith> )
+                -> <ExprArith> + <Term>
+                -> <ExprArith> - <Term>
+                -> <Term>
+
+<Term>          -> <Term> * <Atom>
+                -> <Term> / <Atom>
+                -> <Atom>
+
+<Atom>          -> [Number]
+                -> [VarName]
+                -> -<Atom>
+
+<If>            -> IF (<Cond>) THEN [EndLine] <Code> <IfSeq>
+
+<IfSeq>         -> ENDIF
+                -> ELSE [EndLine] <Code> ENDIF
+
+<Cond>          -> <Cond> OR <AndCond>
+                -> <AndCond>
+
+<AndCond>       -> <AndCond> AND <SimpleCond>
+                -> <SimpleCond>
+
+<SimpleCond>    -> <ExprArith> <Comp> <ExprArith>
+                -> NOT <SimpleCond> # pas tres sur
+
+<Comp>          -> =
+                -> >=
+                -> >
+                -> <=
+                -> <
+                -> <>
+
+<While>         -> WHILE (<Cond>) DO [EndLine] <Code> ENDWHILE
+
+<For>           -> FOR [VarName] := <ExprArith> TO <ExprArith> DO <Code> ENDFOR
+
+<Print>         -> PRINT(<ExpList>)
+
+<Read>          -> READ(<VarList>)
+
+<ExpList>       -> <ExprArith> , <ExpList>
+                -> <ExprArith>

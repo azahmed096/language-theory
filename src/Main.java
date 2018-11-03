@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Iterator;
 
 public class Main {
 
@@ -31,12 +32,7 @@ public class Main {
 
 					Symbol symbol;
 					
-					while ((symbol = scanner.yylex()) != null){
-					
-						if (symbol == null){
-							System.out.println("Null");
-							continue;
-						}
+					while ((symbol = scanner.yylex()).getType() != LexicalUnit.EOS){
 						symboles.add(symbol);
 						if (symbol.getType() == LexicalUnit.VARNAME){
 							table.foundIdentifier(symbol);
@@ -54,10 +50,15 @@ public class Main {
 					e.printStackTrace();
 				}
 			}
+			
 			for (Symbol symbol: symboles){
 				System.out.println(symbol);
 			}
 			System.out.println(table);
+			symboles.add(new Symbol(LexicalUnit.EOS));
+			Iterator<Symbol> iterator = symboles.iterator();
+			// iterator.next();
+			new Parser(iterator).beginParse();
 		}
 
 	

@@ -1,0 +1,3 @@
+FOR i := 1 TO number DO
+    result := result * i
+ENDFOR

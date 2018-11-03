@@ -15,9 +15,7 @@
 
 // Return value of the program
 %eofval{
-	
-	
-	return null;
+	return new Symbol(LexicalUnit.EOS, yyline, yycolumn);
 %eofval}
 
 // Extended Regular Expressions
