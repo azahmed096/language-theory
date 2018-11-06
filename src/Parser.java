@@ -1,5 +1,6 @@
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Parser {
@@ -10,25 +11,31 @@ public class Parser {
         this.symbols = symbols;
     }
 
-    public void beginParse(){
+    public ParseTree beginParse(){
         lookAhead = symbols.next();
-        varProgram();
+        ParseTree res = varExprArith();// varProgram();
+        //ParseTree.print(res, 0);
+        System.out.println(res.toLaTeX());
         if (this.lookAhead.getType() != LexicalUnit.EOS){
             // consumed entirly?
             throw new RuntimeException();
         }
+        return res;
     }
 
-    private void match(LexicalUnit unit) {
+    private ParseTree match(LexicalUnit unit) {
         if (lookAhead.getType() == unit){
-            System.out.println("Lexical unit matched " + unit + "" + lookAhead);
+           // System.out.println("Lexical unit matched " + unit + "" + lookAhead);
 /*            System.out.println("Stack");
             StackTraceElement[] e = Thread.currentThread().getStackTrace();
             for (int i = 0; i < e.length - 3; ++i){
                 System.out.println("\t\t\t"+ e[i]);
             }
             System.out.println("End of stack");*/
+            ParseTree res = new ParseTree(lookAhead);
+            //
             lookAhead = this.symbols.next();
+            return res;
         }
         else {
             throw new RuntimeException("have" + lookAhead.getType() + " excpect " + unit);
@@ -36,12 +43,17 @@ public class Parser {
     }
 
     private void varProgram() {
-        match(LexicalUnit.BEGINPROG);
-        match(LexicalUnit.PROGNAME);
-        match(LexicalUnit.ENDLINE);
-        varVariables();
-        varCode();
-        match(LexicalUnit.ENDPROG);
+      /*  return ParseTree(
+            "<Program>",
+            Arrays.asList(
+            match(LexicalUnit.BEGINPROG),
+            match(LexicalUnit.PROGNAME),
+            match(LexicalUnit.ENDLINE),
+            varVariables(),
+            varCode(),
+            match(LexicalUnit.ENDPROG)
+            )
+        );*/
     }
 
     private void varVariables() {
@@ -116,67 +128,97 @@ public class Parser {
         varExprArith();
     }
 
-    private void varExprArith() {
-        varTerm();
-        varExprArithPrim();
+    private ParseTree varExprArith() {
+        ArrayList sons = new ArrayList();
+        sons.add(varTerm());
+        ParseTree prim = varExprArithPrim();
+        if (prim != null){
+            sons.add(prim);
+        }
+        return new ParseTree(
+            "<ExprArith>",
+            sons
+        );
     }
 
-    private void varExprArithPrim() {
-        switch (lookAhead.getType()){
-            case PLUS:
-                match(LexicalUnit.PLUS);
-                varTerm();
-                varExprArithPrim();
-                break;
+    private ParseTree varExprArithPrim() {
+        LexicalUnit type = lookAhead.getType();
+        switch (type){
             case MINUS:
-                match(LexicalUnit.MINUS);
-                varTerm();
-                varExpListPrim();
-            // epsilon
+            case PLUS:
+                ArrayList sons = new ArrayList();
+                sons.add(match(type));
+                sons.add(varTerm());
+                ParseTree prim = varExprArithPrim();
+                if (prim != null){
+                    sons.add(prim);
+                }
+                return new ParseTree(
+                    "<ExprArithPrim>",
+                    sons
+                );
         }
+        return null;
     }
 
-    private void varTerm() {
-        varAtom();
-        varTermPrim();
+    private ParseTree varTerm() {
+        ArrayList sons = new ArrayList();
+        sons.add(varAtom());
+        ParseTree prim = varTermPrim();
+        if (prim != null){
+            sons.add(prim);
+        }
+        return new ParseTree(
+            "<Term>",
+            sons
+        );
     }
 
-    private void varTermPrim() {
-        switch(lookAhead.getType()){
-            case TIMES:
-                match(LexicalUnit.TIMES);
-                varAtom();
-                varTermPrim();
-                break;
+    private ParseTree varTermPrim() {
+        LexicalUnit type = lookAhead.getType();
+        switch (type){
             case DIVIDE:
-                match(LexicalUnit.DIVIDE);
-                varAtom();
-                varTermPrim();
-            // epsilon
+            case TIMES:
+                ArrayList sons = new ArrayList();
+                sons.add(match(type));
+                sons.add(varAtom());
+                ParseTree prim = varTermPrim();
+                if (prim != null){
+                    sons.add(prim);
+                }
+                return new ParseTree(
+                    "<TermPrim>",
+                    sons
+                );
         }
+        return null;
     }
 
-    private void varAtom() {
-        switch (lookAhead.getType()){
-            case NUMBER:
-                match(LexicalUnit.NUMBER);
-                break;
+    private ParseTree varAtom() {
+        LexicalUnit type = lookAhead.getType();
+        List<ParseTree> sons = null;
+        switch (type){
             case VARNAME:
-                match(LexicalUnit.VARNAME);
+            case NUMBER:
+                sons = Arrays.asList(match(type));
                 break;
             case LPAREN:
-                match(LexicalUnit.LPAREN);
-                varExprArith();
-                match(LexicalUnit.RPAREN);
+                sons = Arrays.asList(
+                    match(LexicalUnit.LPAREN),
+                    varExprArith(),
+                    match(LexicalUnit.RPAREN)
+                );
                 break;
             case MINUS:
-                match(LexicalUnit.MINUS);
-                varAtom();
+                sons = Arrays.asList(
+                    match(LexicalUnit.MINUS),
+                    varAtom()
+                );
                 break;
             default:
-                /*  error */
-                break;
+                throw new RuntimeException("kfdksl");
         }
+        return new ParseTree("<Atom>", sons);
     }
 
     private void varIf() {

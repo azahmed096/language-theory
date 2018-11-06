@@ -25,6 +25,10 @@ public class Symbol{
 		this(unit,UNDEFINED_POSITION,UNDEFINED_POSITION,NO_VALUE);
 	}
 	
+	public Symbol(String value){
+		this(null,UNDEFINED_POSITION,UNDEFINED_POSITION,value);
+	}
+	
 	public Symbol(LexicalUnit unit,Object value){
 		this(unit,UNDEFINED_POSITION,UNDEFINED_POSITION,value);
 	}
@@ -67,6 +71,6 @@ public class Symbol{
 			final String type		= this.type  != null? this.type.toString()  : "null";
       return String.format("token: %-15slexical unit: %s", value, type);
 		}
-		return "Non-terminal symbol";
+		return value.toString();
 	}
 }

@@ -3,7 +3,7 @@ SOURCE_DIR=$(shell readlink -f ./src)
 CLASS_PATH=$(shell readlink -f ./build)
 DOC_DIR=$(shell readlink -f ./doc)
 TEST_DIR=$(shell readlink -f ./test)
-TEST_FILE=00-Factorial.sf
+TEST_FILE=05-Arithm.sf
 DIST_DIR=$(shell readlink -f ./dist)
 
 
@@ -17,7 +17,7 @@ report: $(DOC_DIR)/report.pdf
 $(DOC_DIR)/report.pdf: $(DOC_DIR)/report.tex
 	cd $(DOC_DIR) && xelatex report.tex
 
-compile: $(CLASS_PATH)/UnexpectedTokenException.class $(CLASS_PATH)/LexicalUnit.class $(CLASS_PATH)/Symbol.class $(CLASS_PATH)/Lexer5.class $(CLASS_PATH)/SymbolTable.class $(CLASS_PATH)/Parser.class $(CLASS_PATH)/Main.class
+compile: $(CLASS_PATH)/UnexpectedTokenException.class $(CLASS_PATH)/LexicalUnit.class $(CLASS_PATH)/Symbol.class $(CLASS_PATH)/Lexer5.class $(CLASS_PATH)/SymbolTable.class $(CLASS_PATH)/ParseTree.class $(CLASS_PATH)/Parser.class $(CLASS_PATH)/Main.class
 
 execute: jar
 	java -jar $(DIST_DIR)/part2.jar $(TEST_DIR)/$(TEST_FILE) # -nest-comment.sf

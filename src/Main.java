@@ -58,6 +58,7 @@ public class Main {
 			symboles.add(new Symbol(LexicalUnit.EOS));
 			Iterator<Symbol> iterator = symboles.iterator();
 			// iterator.next();
+			System.out.println("kkkkk");
 			new Parser(iterator).beginParse();
 		}
 
