@@ -1,0 +1,72 @@
+\RequirePackage{luatex85}
+\documentclass{standalone}
+
+\usepackage{tikz}
+
+\usetikzlibrary{graphdrawing, graphdrawing.trees}
+
+\begin{document}
+
+\begin{tikzpicture}[tree layout]
+\node {<ExprArith>}
+child { node {<Term>}
+child { node {<Atom>}
+child { node {token: result         lexical unit: VARNAME}
+ }
+ }
+child { node {<TermPrim>}
+child { node {token: *              lexical unit: TIMES}
+ }
+child { node {<Atom>}
+child { node {token: (              lexical unit: LPAREN}
+ }
+child { node {<ExprArith>}
+child { node {<Term>}
+child { node {<Atom>}
+child { node {token: i              lexical unit: VARNAME}
+ }
+ }
+child { node {<TermPrim>}
+child { node {$\varepsilon$}
+ }
+ }
+ }
+child { node {<ExprArithPrim>}
+child { node {token: -              lexical unit: MINUS}
+ }
+child { node {<Term>}
+child { node {<Atom>}
+child { node {token: 3              lexical unit: NUMBER}
+ }
+ }
+child { node {<TermPrim>}
+child { node {$\varepsilon$}
+ }
+ }
+ }
+child { node {<ExprArithPrim>}
+child { node {$\varepsilon$}
+ }
+ }
+ }
+ }
+child { node {token: )              lexical unit: RPAREN}
+ }
+ }
+child { node {<TermPrim>}
+child { node {$\varepsilon$}
+ }
+ }
+ }
+ }
+child { node {<ExprArithPrim>}
+child { node {$\varepsilon$}
+ }
+ }
+;
+\end{tikzpicture}
+
+\end{document}
+%% Local Variables:
+%% TeX-engine: luatex
+%% End:

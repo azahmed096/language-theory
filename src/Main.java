@@ -52,12 +52,13 @@ public class Main {
 			}
 			
 			for (Symbol symbol: symboles){
-				System.out.println(symbol);
+			//	System.out.println(symbol);
 			}
-			System.out.println(table);
+			// System.out.println(table);
 			symboles.add(new Symbol(LexicalUnit.EOS));
 			Iterator<Symbol> iterator = symboles.iterator();
 			// iterator.next();
+			// System.out.println("kkkkk");
 			new Parser(iterator).beginParse();
 		}
 

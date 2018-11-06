@@ -59,7 +59,7 @@ public class ParseTree {
         if (label.isEpsilon()){
             treeTeX.append("$\\varepsilon$");
         }
-        else {
+        else  {
             treeTeX.append(label);
         }
         treeTeX.append(" ");
@@ -76,7 +76,10 @@ public class ParseTree {
     public String toTikZ() {
         StringBuilder treeTikZ = new StringBuilder();
         treeTikZ.append("node {");
-        treeTikZ.append(label.toTeX());
+        if (label.isEpsilon()){
+            treeTikZ.append("$\\varepsilon$");
+        }
+        else treeTikZ.append(label.toString());
         treeTikZ.append("}\n");
         for (ParseTree child: children) {
             treeTikZ.append("child { ");
@@ -91,6 +94,19 @@ public class ParseTree {
      */
     public String toTikZPicture() {
         return "\\begin{tikzpicture}[tree layout]\n\\" + toTikZ() + ";\n\\end{tikzpicture}";
+    }
+
+    public static void print(ParseTree tree, int level){
+        String space  = "";
+        for (int i = 0; i < level; ++i){
+            space = space + "\t";
+        }
+        System.out.println(space+tree.label);
+        if (tree.children == null) return;
+        for (ParseTree son: tree.children){
+            print(son, level + 1);
+        }
+
     }
 
     /** Writes the tree as a LaTeX document which can be compiled (using the LuaLaTeX engine).
