@@ -4,38 +4,51 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Parser {
     private Symbol lookAhead;
     private Iterator<Symbol> symbols;
-    private List<String> rules;
+    private List<Integer> rules;
 
-    public Parser(Iterator<Symbol> symbols){
+    public Parser(Iterator<Symbol> symbols) {
         this.symbols = symbols;
     }
 
-    private void rule(int number){
-        rules.add(Integer.toString(number));
+    private void rule(int number) {
+        rules.add(number);
     }
 
-    public ParseTree beginParse(Config config) throws IOException{
+    public ParseTree beginParse(Config config) throws IOException {
         rules = new ArrayList<>();
         lookAhead = symbols.next();
         ParseTree res = varProgram();
-        
-        if (config.isVerbose()){
-            System.out.println("VERBOSE");
+
+        Stream<String> rulesStream;
+        String sep = " ";
+
+        if (config.isVerbose()) {
+            rulesStream = rules.stream().map((r) -> {
+                return r + " " + Grammar.rule(r);
+            });
+            sep = "\n";
+        } else {
+            rulesStream = rules.stream().map((r) -> {
+                return Integer.toString(r);
+            });
         }
 
-        if (config.hasTexFile()){
+        if (config.hasTexFile()) {
             OutputStreamWriter stream = config.getTexStream();
             stream.write(res.toLaTeX());
             stream.close();
         }
 
-        System.out.println(String.join(" ", rules));
+        System.out.println(String.join(sep, rulesStream.collect(Collectors.toList())));
 
-        if (this.lookAhead.getType() != LexicalUnit.EOS){
+        if (this.lookAhead.getType() != LexicalUnit.EOS) {
             // consumed entirly?
             throw new RuntimeException();
         }
@@ -43,15 +56,15 @@ public class Parser {
     }
 
     private ParseTree match(LexicalUnit unit) {
-        if (lookAhead.getType() == unit){
-           // System.out.println("Match: "+unit);
-           // System.out.println("Lexical unit matched " + unit + "" + lookAhead);
-/*            System.out.println("Stack");
-            StackTraceElement[] e = Thread.currentThread().getStackTrace();
-            for (int i = 0; i < e.length - 3; ++i){
-                System.out.println("\t\t\t"+ e[i]);
-            }
-            System.out.println("End of stack");*/
+        if (lookAhead.getType() == unit) {
+            // System.out.println("Match: "+unit);
+            // System.out.println("Lexical unit matched " + unit + "" + lookAhead);
+            /*
+             * System.out.println("Stack"); StackTraceElement[] e =
+             * Thread.currentThread().getStackTrace(); for (int i = 0; i < e.length - 3;
+             * ++i){ System.out.println("\t\t\t"+ e[i]); }
+             * System.out.println("End of stack");
+             */
             ParseTree res = new ParseTree(lookAhead);
             //
             lookAhead = this.symbols.next();
@@ -64,37 +77,22 @@ public class Parser {
 
     private ParseTree varProgram() {
         rule(1);
-        return new ParseTree(
-            "<Program>",
-            Arrays.asList(
-                match(LexicalUnit.BEGINPROG),
-                match(LexicalUnit.PROGNAME),
-                match(LexicalUnit.ENDLINE),
-                varVariables(),
-                varCode(),
-                match(LexicalUnit.ENDPROG)
-            )
-        );
+        return new ParseTree("<Program>", Arrays.asList(match(LexicalUnit.BEGINPROG), match(LexicalUnit.PROGNAME),
+                match(LexicalUnit.ENDLINE), varVariables(), varCode(), match(LexicalUnit.ENDPROG)));
     }
 
     private ParseTree varVariables() {
-        if (lookAhead.getType() == LexicalUnit.VARIABLES){
+        if (lookAhead.getType() == LexicalUnit.VARIABLES) {
             rule(2);
-            return new ParseTree(
-                "<Variables>",
-                Arrays.asList(
-                    match(LexicalUnit.VARIABLES),
-                    varVarList(),
-                    match(LexicalUnit.ENDLINE)
-                )
-            );
-            
-        } 
+            return new ParseTree("<Variables>",
+                    Arrays.asList(match(LexicalUnit.VARIABLES), varVarList(), match(LexicalUnit.ENDLINE)));
+
+        }
         rule(3);
         return getEpsilon("<Variables>");
     }
 
-    private ParseTree getEpsilon(String from){
+    private ParseTree getEpsilon(String from) {
         List<ParseTree> sons = new ArrayList<>();
         sons.add(EPS);
         return new ParseTree(from, sons);
@@ -102,26 +100,17 @@ public class Parser {
 
     private ParseTree varVarList() {
         rule(4);
-        return new ParseTree("<VarList>",
-            Arrays.asList(match(LexicalUnit.VARNAME),
-            varVarListPrim())
-        );
+        return new ParseTree("<VarList>", Arrays.asList(match(LexicalUnit.VARNAME), varVarListPrim()));
     }
 
     private static ParseTree EPS = new ParseTree(new Symbol(LexicalUnit.EPSILON));
 
     private ParseTree varVarListPrim() {
-        
-        if (lookAhead.getType() == LexicalUnit.COMMA){
+
+        if (lookAhead.getType() == LexicalUnit.COMMA) {
             rule(5);
-            return new ParseTree(
-                "<VarListPrim>",
-                Arrays.asList(
-                    match(LexicalUnit.COMMA),
-                    match(LexicalUnit.VARNAME),
-                    varVarListPrim()
-                )
-            );
+            return new ParseTree("<VarListPrim>",
+                    Arrays.asList(match(LexicalUnit.COMMA), match(LexicalUnit.VARNAME), varVarListPrim()));
         } else {
             rule(6);
             return getEpsilon("<VarListPrim>");
@@ -129,60 +118,50 @@ public class Parser {
     }
 
     private ParseTree varCode() {
-        switch (lookAhead.getType()){
-            case VARNAME:
-            case IF:
-            case WHILE:
-            case FOR:
-            case PRINT:
-            case READ:
-                rule(7);
-                return new ParseTree("<Code>", Arrays.asList(
-                    varInstruction(),
-                    match(LexicalUnit.ENDLINE),
-                    varCode()
-                ));
+        switch (lookAhead.getType()) {
+        case VARNAME:
+        case IF:
+        case WHILE:
+        case FOR:
+        case PRINT:
+        case READ:
+            rule(7);
+            return new ParseTree("<Code>", Arrays.asList(varInstruction(), match(LexicalUnit.ENDLINE), varCode()));
         }
         rule(8);
         return getEpsilon("<Code>");
     }
 
     private ParseTree varInstruction() {
-        switch (lookAhead.getType()){
-            case VARNAME:
-                rule(9);
-                return new ParseTree("<Instruction>", Arrays.asList(varAssign()));
-            case IF:
-                rule(10);
-                return new ParseTree("<Instruction>", Arrays.asList(varIf()));
-            case WHILE:
-                rule(11);
-                return new ParseTree("<Instruction>", Arrays.asList(varWhile()));
-            case FOR:
-                rule(12);
-                return new ParseTree("<Instruction>", Arrays.asList(varFor()));
-            case PRINT:
-                rule(13);
-                return new ParseTree("<Instruction>", Arrays.asList(varPrint()));
-            case READ:
-                rule(14);
-                return new ParseTree("<Instruction>", Arrays.asList(varRead()));
-            default:
-                throw new RuntimeException("...");
+        switch (lookAhead.getType()) {
+        case VARNAME:
+            rule(9);
+            return new ParseTree("<Instruction>", Arrays.asList(varAssign()));
+        case IF:
+            rule(10);
+            return new ParseTree("<Instruction>", Arrays.asList(varIf()));
+        case WHILE:
+            rule(11);
+            return new ParseTree("<Instruction>", Arrays.asList(varWhile()));
+        case FOR:
+            rule(12);
+            return new ParseTree("<Instruction>", Arrays.asList(varFor()));
+        case PRINT:
+            rule(13);
+            return new ParseTree("<Instruction>", Arrays.asList(varPrint()));
+        case READ:
+            rule(14);
+            return new ParseTree("<Instruction>", Arrays.asList(varRead()));
+        default:
+            throw new RuntimeException("...");
         }
         // return null;
     }
 
     private ParseTree varAssign() {
         rule(15);
-        return new ParseTree(
-            "<Assign>",
-            Arrays.asList(
-                match(LexicalUnit.VARNAME),
-                match(LexicalUnit.ASSIGN),
-                varExprArith()
-            )
-        );
+        return new ParseTree("<Assign>",
+                Arrays.asList(match(LexicalUnit.VARNAME), match(LexicalUnit.ASSIGN), varExprArith()));
     }
 
     private ParseTree varExprArith() {
@@ -190,299 +169,211 @@ public class Parser {
         ArrayList sons = new ArrayList();
         sons.add(varTerm());
         sons.add(varExprArithPrim());
-        return new ParseTree(
-            "<ExprArith>",
-            sons
-        );
+        return new ParseTree("<ExprArith>", sons);
     }
 
     private ParseTree varExprArithPrim() {
         LexicalUnit type = lookAhead.getType();
         ArrayList sons = new ArrayList();
-        switch (type){
-            case PLUS:
-                rule(17);
-                break;
-            case MINUS:
-                rule(18);
-                break;
-            default:
-                rule(19);
-                return getEpsilon("<ExprArithPrim>");
-                
+        switch (type) {
+        case PLUS:
+            rule(17);
+            break;
+        case MINUS:
+            rule(18);
+            break;
+        default:
+            rule(19);
+            return getEpsilon("<ExprArithPrim>");
+
         }
         sons.add(match(type));
         sons.add(varTerm());
         sons.add(varExprArithPrim());
-        return new ParseTree(
-                    "<ExprArithPrim>",
-                    sons
-        );
+        return new ParseTree("<ExprArithPrim>", sons);
     }
 
     private ParseTree varTerm() {
         ArrayList sons = new ArrayList();
         rule(20);
         sons.add(varAtom());
-     
-            sons.add(varTermPrim());
-        
-        return new ParseTree(
-            "<Term>",
-            sons
-        );
+
+        sons.add(varTermPrim());
+
+        return new ParseTree("<Term>", sons);
     }
 
     private ParseTree varTermPrim() {
         LexicalUnit type = lookAhead.getType();
         ArrayList<ParseTree> sons = new ArrayList();
-        switch (type){
-            case TIMES:
-                rule(21);
-                break;
-            case DIVIDE:
-                rule(22);
-                break;
-            default:
-                rule(23);
-                return getEpsilon("<TermPrim>");
+        switch (type) {
+        case TIMES:
+            rule(21);
+            break;
+        case DIVIDE:
+            rule(22);
+            break;
+        default:
+            rule(23);
+            return getEpsilon("<TermPrim>");
         }
         sons.add(match(type));
         sons.add(varAtom());
         sons.add(varTermPrim());
-        return new ParseTree(
-            "<TermPrim>",
-            sons
-        );
+        return new ParseTree("<TermPrim>", sons);
     }
 
     private ParseTree varAtom() {
         LexicalUnit type = lookAhead.getType();
         List<ParseTree> sons = null;
-        switch (type){
-            case NUMBER:
-                rule(24);
-                sons = Arrays.asList(match(type));
-                break;
-            case VARNAME:
-                rule(25);
-                sons = Arrays.asList(match(type));
-                break;
-            case LPAREN:
-                rule(26);
-                sons = Arrays.asList(
-                    match(LexicalUnit.LPAREN),
-                    varExprArith(),
-                    match(LexicalUnit.RPAREN)
-                );
-                break;
-            case MINUS:
-                rule(27);
-                sons = Arrays.asList(
-                    match(LexicalUnit.MINUS),
-                    varAtom()
-                );
-                break;
-            default:
-                throw new RuntimeException("kfdksl");
+        switch (type) {
+        case NUMBER:
+            rule(24);
+            sons = Arrays.asList(match(type));
+            break;
+        case VARNAME:
+            rule(25);
+            sons = Arrays.asList(match(type));
+            break;
+        case LPAREN:
+            rule(26);
+            sons = Arrays.asList(match(LexicalUnit.LPAREN), varExprArith(), match(LexicalUnit.RPAREN));
+            break;
+        case MINUS:
+            rule(27);
+            sons = Arrays.asList(match(LexicalUnit.MINUS), varAtom());
+            break;
+        default:
+            throw new RuntimeException("kfdksl");
         }
         return new ParseTree("<Atom>", sons);
     }
 
     private ParseTree varIf() {
         rule(28);
-        return new ParseTree("<If>", Arrays.asList(match(LexicalUnit.IF),
-        match(LexicalUnit.LPAREN),
-        varCond(),
-        match(LexicalUnit.RPAREN),
-        match(LexicalUnit.THEN),
-        match(LexicalUnit.ENDLINE),
-        varCode(),
-        varIfSeq()));
+        return new ParseTree("<If>", Arrays.asList(match(LexicalUnit.IF), match(LexicalUnit.LPAREN), varCond(),
+                match(LexicalUnit.RPAREN), match(LexicalUnit.THEN), match(LexicalUnit.ENDLINE), varCode(), varIfSeq()));
     }
 
     private ParseTree varIfSeq() {
-        switch (lookAhead.getType()){
-            case ENDIF:
+        switch (lookAhead.getType()) {
+        case ENDIF:
             rule(29);
-            return new ParseTree("<IfSeq>", Arrays.asList(
-                
-                match(LexicalUnit.ENDIF)
-                ))
-                ;
-            case ELSE:
-                    rule(30);
-                    return new ParseTree("<IfSeq>", Arrays.asList(
-                        match(LexicalUnit.ELSE),
-                        match(LexicalUnit.ENDLINE),
-                        varCode(),
-                        match(LexicalUnit.ENDIF)
-                    ))
-                    ;
-            default:
-                throw new RuntimeException("...");
+            return new ParseTree("<IfSeq>", Arrays.asList(match(LexicalUnit.ENDIF)));
+        case ELSE:
+            rule(30);
+            return new ParseTree("<IfSeq>", Arrays.asList(match(LexicalUnit.ELSE), match(LexicalUnit.ENDLINE),
+                    varCode(), match(LexicalUnit.ENDIF)));
+        default:
+            throw new RuntimeException("...");
         }
     }
 
     private ParseTree varCond() {
         rule(31);
-        return new ParseTree("<Cond>", Arrays.asList(varAndCond(),
-        varCondPrim()));
+        return new ParseTree("<Cond>", Arrays.asList(varAndCond(), varCondPrim()));
     }
 
     private ParseTree varCondPrim() {
-        
-        if (lookAhead.getType() == LexicalUnit.OR){
+
+        if (lookAhead.getType() == LexicalUnit.OR) {
             rule(32);
-            return new ParseTree("<CondPrim>", Arrays.asList(
-                match(LexicalUnit.OR),
-                varAndCond(),
-                varCondPrim()
-            ));
-        } 
+            return new ParseTree("<CondPrim>", Arrays.asList(match(LexicalUnit.OR), varAndCond(), varCondPrim()));
+        }
         rule(33);
         return getEpsilon("<CondPrim>");
     }
 
     private ParseTree varAndCond() {
         rule(34);
-        return new ParseTree("<AndCond>", Arrays.asList(varSimpleCond(),
-        varAndCondPrim()));
+        return new ParseTree("<AndCond>", Arrays.asList(varSimpleCond(), varAndCondPrim()));
     }
 
     private ParseTree varAndCondPrim() {
-        
-        if (lookAhead.getType() == LexicalUnit.AND){
+
+        if (lookAhead.getType() == LexicalUnit.AND) {
             rule(35);
-            return new ParseTree("<CondPrim>", Arrays.asList(
-                match(LexicalUnit.AND),
-                varSimpleCond(),
-                varAndCondPrim()
-            ));
+            return new ParseTree("<CondPrim>",
+                    Arrays.asList(match(LexicalUnit.AND), varSimpleCond(), varAndCondPrim()));
         } // espilon
         rule(36);
         return getEpsilon("<AndCondPrim>");
     }
 
     private ParseTree varSimpleCond() {
-        if (lookAhead.getType() != LexicalUnit.NOT){
+        if (lookAhead.getType() != LexicalUnit.NOT) {
             rule(37);
-            return new ParseTree("<SimpleCond>", Arrays.asList(
-                varExprArith(),
-                varComp(),
-                varExprArith()
-            ))
-            ;
-        }
-        else {
+            return new ParseTree("<SimpleCond>", Arrays.asList(varExprArith(), varComp(), varExprArith()));
+        } else {
             rule(38);
-            return new ParseTree("<SimpleCond>", Arrays.asList(
-
-                match(LexicalUnit.NOT),
-                varSimpleCond()
-            ));
+            return new ParseTree("<SimpleCond>", Arrays.asList(match(LexicalUnit.NOT), varSimpleCond()));
         }
     }
 
     private ParseTree varComp() {
-        switch (lookAhead.getType()){
-            case EQ:
-                rule(39);
-                return new ParseTree("<Comp>", Arrays.asList(match(LexicalUnit.EQ)));
-            case LEQ:
-                rule(40);
-                return new ParseTree("<Comp>", Arrays.asList(match(LexicalUnit.LEQ)));
-            case LT:
-                rule(41);
-                return new ParseTree("<Comp>", Arrays.asList(match(LexicalUnit.LT)));
-            case GEQ:
-                rule(42);
-                return new ParseTree("<Comp>", Arrays.asList(match(LexicalUnit.GEQ)));
-            case GT:
-                rule(43);
-                return new ParseTree("<Comp>", Arrays.asList(match(LexicalUnit.GT)));
-            case NEQ:
-                rule(44);
-                return new ParseTree("<Comp>", Arrays.asList(match(LexicalUnit.NEQ)));
-            default:
-                throw new RuntimeException("...");
+        switch (lookAhead.getType()) {
+        case EQ:
+            rule(39);
+            return new ParseTree("<Comp>", Arrays.asList(match(LexicalUnit.EQ)));
+        case LEQ:
+            rule(40);
+            return new ParseTree("<Comp>", Arrays.asList(match(LexicalUnit.LEQ)));
+        case LT:
+            rule(41);
+            return new ParseTree("<Comp>", Arrays.asList(match(LexicalUnit.LT)));
+        case GEQ:
+            rule(42);
+            return new ParseTree("<Comp>", Arrays.asList(match(LexicalUnit.GEQ)));
+        case GT:
+            rule(43);
+            return new ParseTree("<Comp>", Arrays.asList(match(LexicalUnit.GT)));
+        case NEQ:
+            rule(44);
+            return new ParseTree("<Comp>", Arrays.asList(match(LexicalUnit.NEQ)));
+        default:
+            throw new RuntimeException("...");
 
         }
     }
 
     private ParseTree varWhile() {
-            rule(45);
-        return new ParseTree("<While>", Arrays.asList(
-
-            match(LexicalUnit.WHILE),
-            match(LexicalUnit.LPAREN),
-            varCond(),
-            match(LexicalUnit.RPAREN),
-            match(LexicalUnit.DO),
-            match(LexicalUnit.ENDLINE),
-            varCode(),
-            match(LexicalUnit.ENDWHILE)
-        ));
+        rule(45);
+        return new ParseTree("<While>",
+                Arrays.asList(match(LexicalUnit.WHILE), match(LexicalUnit.LPAREN), varCond(), match(LexicalUnit.RPAREN),
+                        match(LexicalUnit.DO), match(LexicalUnit.ENDLINE), varCode(), match(LexicalUnit.ENDWHILE)));
     }
 
     private ParseTree varFor() {
         rule(46);
-        return new ParseTree("<For>", Arrays.asList(
-
-            match(LexicalUnit.FOR),
-            match(LexicalUnit.VARNAME),
-            match(LexicalUnit.ASSIGN),
-            varExprArith(),
-            match(LexicalUnit.TO),
-            varExprArith(),
-            match(LexicalUnit.DO),
-            match(LexicalUnit.ENDLINE),
-            varCode(),
-            match(LexicalUnit.ENDFOR)
-        ));
+        return new ParseTree("<For>",
+                Arrays.asList(match(LexicalUnit.FOR), match(LexicalUnit.VARNAME), match(LexicalUnit.ASSIGN),
+                        varExprArith(), match(LexicalUnit.TO), varExprArith(), match(LexicalUnit.DO),
+                        match(LexicalUnit.ENDLINE), varCode(), match(LexicalUnit.ENDFOR)));
     }
 
     private ParseTree varPrint() {
         rule(47);
-        return new ParseTree("<Print>", Arrays.asList(
-
-            match(LexicalUnit.PRINT),
-            match(LexicalUnit.LPAREN),
-            varExpList(),
-            match(LexicalUnit.RPAREN)
-        ));
+        return new ParseTree("<Print>", Arrays.asList(match(LexicalUnit.PRINT), match(LexicalUnit.LPAREN), varExpList(),
+                match(LexicalUnit.RPAREN)));
     }
 
     private ParseTree varRead() {
         rule(48);
-        return new ParseTree("<Read>", Arrays.asList(
-
-            match(LexicalUnit.READ),
-            match(LexicalUnit.LPAREN),
-            varVarList(),
-            match(LexicalUnit.RPAREN)
-        ));
+        return new ParseTree("<Read>", Arrays.asList(match(LexicalUnit.READ), match(LexicalUnit.LPAREN), varVarList(),
+                match(LexicalUnit.RPAREN)));
     }
 
     private ParseTree varExpList() {
         rule(49);
-        return new ParseTree("<ExpList>", Arrays.asList(
-
-            varExprArith(),
-            varExpListPrim()
-        ));
+        return new ParseTree("<ExpList>", Arrays.asList(varExprArith(), varExpListPrim()));
     }
 
     private ParseTree varExpListPrim() {
-    
-        if (lookAhead.getType() == LexicalUnit.COMMA){
-            rule(50);
-            return new ParseTree("<ExpListPrim>", Arrays.asList(
 
-                match(LexicalUnit.COMMA),
-                varExprArith(),
-                varExpListPrim()
-            ));
+        if (lookAhead.getType() == LexicalUnit.COMMA) {
+            rule(50);
+            return new ParseTree("<ExpListPrim>",
+                    Arrays.asList(match(LexicalUnit.COMMA), varExprArith(), varExpListPrim()));
         }
         rule(51);
         return getEpsilon("<ExpListPrim>");

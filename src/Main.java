@@ -22,11 +22,11 @@ public class Main {
 					table.foundIdentifier(symbol);
 				}
 			}
-
+/*
 			for (Symbol s: symboles){
 				System.out.println(s);
 			}
-			System.out.println(table);
+			System.out.println(table);*/
 			symboles.add(new Symbol(LexicalUnit.EOS));
 			Iterator<Symbol> iterator = symboles.iterator();
 

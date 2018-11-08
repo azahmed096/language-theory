@@ -25,7 +25,8 @@ public class Config {
             }
             prepareFortranReader(argv[filePosition]);
         } catch (ArrayIndexOutOfBoundsException e) {
-            this.error = "Usage : -jar part2.jar [-v] [-wt <latexFile>] <superFortranFile>";
+            this.error = "(The order of params should be the same) "+
+            "Usage : -jar part2.jar [-v] [-wt <latexFile>] <superFortranFile>";
         }
     }
 
