@@ -20,9 +20,9 @@ public class Parser {
         rules = new ArrayList<>();
        // System.out.println(EPS.isEpsilon() + "epslion?");
         lookAhead = symbols.next();
-        ParseTree res = varProgram();// varProgram();
+        ParseTree res = varProgram();
         //ParseTree.print(res, 0);
-        System.out.println(String.join(" ", rules));
+        // System.out.println(String.join(" ", rules));
         System.out.println(res.toLaTeX());
         if (this.lookAhead.getType() != LexicalUnit.EOS){
             // consumed entirly?
@@ -33,6 +33,7 @@ public class Parser {
 
     private ParseTree match(LexicalUnit unit) {
         if (lookAhead.getType() == unit){
+           // System.out.println("Match: "+unit);
            // System.out.println("Lexical unit matched " + unit + "" + lookAhead);
 /*            System.out.println("Stack");
             StackTraceElement[] e = Thread.currentThread().getStackTrace();
@@ -299,7 +300,8 @@ public class Parser {
                 return new ParseTree("<IfSeq>", Arrays.asList(
                     match(LexicalUnit.ELSE),
                     match(LexicalUnit.ENDLINE),
-                    varCode()
+                    varCode(),
+                    match(LexicalUnit.ENDIF)
                 ))
                 ;
             case ENDIF:
@@ -379,22 +381,22 @@ public class Parser {
         switch (lookAhead.getType()){
             case EQ:
                 rule(39);
-                new ParseTree("<Comp>", Arrays.asList(match(LexicalUnit.EQ)));
+                return new ParseTree("<Comp>", Arrays.asList(match(LexicalUnit.EQ)));
             case LEQ:
                 rule(40);
-                new ParseTree("<Comp>", Arrays.asList(match(LexicalUnit.LEQ)));
+                return new ParseTree("<Comp>", Arrays.asList(match(LexicalUnit.LEQ)));
             case LT:
                 rule(41);
-                new ParseTree("<Comp>", Arrays.asList(match(LexicalUnit.LT)));
+                return new ParseTree("<Comp>", Arrays.asList(match(LexicalUnit.LT)));
             case GT:
                 rule(43);
-                new ParseTree("<Comp>", Arrays.asList(match(LexicalUnit.GT)));
+                return new ParseTree("<Comp>", Arrays.asList(match(LexicalUnit.GT)));
             case GEQ:
                 rule(42);
-                new ParseTree("<Comp>", Arrays.asList(match(LexicalUnit.GEQ)));
+                return new ParseTree("<Comp>", Arrays.asList(match(LexicalUnit.GEQ)));
             case NEQ:
                 rule(44);
-                new ParseTree("<Comp>", Arrays.asList(match(LexicalUnit.NEQ)));
+                return new ParseTree("<Comp>", Arrays.asList(match(LexicalUnit.NEQ)));
             default:
                 throw new RuntimeException("...");
 

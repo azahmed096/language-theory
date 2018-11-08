@@ -8,7 +8,199 @@
 \begin{document}
 
 \begin{tikzpicture}[tree layout]
-\node {<ExprArith>}
+\node {<Program>}
+child { node {token: BEGINPROG      lexical unit: BEGINPROG}
+ }
+child { node {token: Factorial      lexical unit: PROGNAME}
+ }
+child { node {token:  $\backslash$  lexical unit: ENDLINE}
+ }
+child { node {<Variables>}
+child { node {token: VARIABLES      lexical unit: VARIABLES}
+ }
+child { node {<VarList>}
+child { node {token: number         lexical unit: VARNAME}
+ }
+child { node {<VarListPrim>}
+child { node {token: ,              lexical unit: COMMA}
+ }
+child { node {token: result         lexical unit: VARNAME}
+ }
+child { node {<VarListPrim>}
+child { node {$\varepsilon$}
+ }
+ }
+ }
+ }
+child { node {token:  $\backslash$  lexical unit: ENDLINE}
+ }
+ }
+child { node {<Code>}
+child { node {<Instruction>}
+child { node {<Read>}
+child { node {token: READ           lexical unit: READ}
+ }
+child { node {token: (              lexical unit: LPAREN}
+ }
+child { node {<VarList>}
+child { node {token: number         lexical unit: VARNAME}
+ }
+child { node {<VarListPrim>}
+child { node {$\varepsilon$}
+ }
+ }
+ }
+child { node {token: )              lexical unit: RPAREN}
+ }
+ }
+ }
+child { node {token:  $\backslash$  lexical unit: ENDLINE}
+ }
+child { node {<Code>}
+child { node {<Instruction>}
+child { node {<Assign>}
+child { node {token: result         lexical unit: VARNAME}
+ }
+child { node {token: :=             lexical unit: ASSIGN}
+ }
+child { node {<ExprArith>}
+child { node {<Term>}
+child { node {<Atom>}
+child { node {token: 1              lexical unit: NUMBER}
+ }
+ }
+child { node {<TermPrim>}
+child { node {$\varepsilon$}
+ }
+ }
+ }
+child { node {<ExprArithPrim>}
+child { node {$\varepsilon$}
+ }
+ }
+ }
+ }
+ }
+child { node {token:  $\backslash$  lexical unit: ENDLINE}
+ }
+child { node {<Code>}
+child { node {<Instruction>}
+child { node {<If>}
+child { node {token: IF             lexical unit: IF}
+ }
+child { node {token: (              lexical unit: LPAREN}
+ }
+child { node {<Cond>}
+child { node {<AndCond>}
+child { node {<SimpleCond>}
+child { node {<ExprArith>}
+child { node {<Term>}
+child { node {<Atom>}
+child { node {token: number         lexical unit: VARNAME}
+ }
+ }
+child { node {<TermPrim>}
+child { node {$\varepsilon$}
+ }
+ }
+ }
+child { node {<ExprArithPrim>}
+child { node {$\varepsilon$}
+ }
+ }
+ }
+child { node {<Comp>}
+child { node {token: >=             lexical unit: GEQ}
+ }
+ }
+child { node {<ExprArith>}
+child { node {<Term>}
+child { node {<Atom>}
+child { node {token: 0              lexical unit: NUMBER}
+ }
+ }
+child { node {<TermPrim>}
+child { node {$\varepsilon$}
+ }
+ }
+ }
+child { node {<ExprArithPrim>}
+child { node {$\varepsilon$}
+ }
+ }
+ }
+ }
+child { node {<AndCondPrim>}
+child { node {$\varepsilon$}
+ }
+ }
+ }
+child { node {<AndCondPrim>}
+child { node {$\varepsilon$}
+ }
+ }
+ }
+child { node {token: )              lexical unit: RPAREN}
+ }
+child { node {token: THEN           lexical unit: THEN}
+ }
+child { node {token:  $\backslash$  lexical unit: ENDLINE}
+ }
+child { node {<Code>}
+child { node {<Instruction>}
+child { node {<For>}
+child { node {token: FOR            lexical unit: FOR}
+ }
+child { node {token: i              lexical unit: VARNAME}
+ }
+child { node {token: :=             lexical unit: ASSIGN}
+ }
+child { node {<ExprArith>}
+child { node {<Term>}
+child { node {<Atom>}
+child { node {token: 1              lexical unit: NUMBER}
+ }
+ }
+child { node {<TermPrim>}
+child { node {$\varepsilon$}
+ }
+ }
+ }
+child { node {<ExprArithPrim>}
+child { node {$\varepsilon$}
+ }
+ }
+ }
+child { node {token: TO             lexical unit: TO}
+ }
+child { node {<ExprArith>}
+child { node {<Term>}
+child { node {<Atom>}
+child { node {token: number         lexical unit: VARNAME}
+ }
+ }
+child { node {<TermPrim>}
+child { node {$\varepsilon$}
+ }
+ }
+ }
+child { node {<ExprArithPrim>}
+child { node {$\varepsilon$}
+ }
+ }
+ }
+child { node {token: DO             lexical unit: DO}
+ }
+child { node {token:  $\backslash$  lexical unit: ENDLINE}
+ }
+child { node {<Code>}
+child { node {<Instruction>}
+child { node {<Assign>}
+child { node {token: result         lexical unit: VARNAME}
+ }
+child { node {token: :=             lexical unit: ASSIGN}
+ }
+child { node {<ExprArith>}
 child { node {<Term>}
 child { node {<Atom>}
 child { node {token: result         lexical unit: VARNAME}
@@ -18,11 +210,6 @@ child { node {<TermPrim>}
 child { node {token: *              lexical unit: TIMES}
  }
 child { node {<Atom>}
-child { node {token: (              lexical unit: LPAREN}
- }
-child { node {<ExprArith>}
-child { node {<Term>}
-child { node {<Atom>}
 child { node {token: i              lexical unit: VARNAME}
  }
  }
@@ -31,12 +218,39 @@ child { node {$\varepsilon$}
  }
  }
  }
-child { node {<ExprArithPrim>}
-child { node {token: -              lexical unit: MINUS}
  }
+child { node {<ExprArithPrim>}
+child { node {$\varepsilon$}
+ }
+ }
+ }
+ }
+ }
+child { node {token:  $\backslash$  lexical unit: ENDLINE}
+ }
+child { node {<Code>}
+child { node {$\varepsilon$}
+ }
+ }
+ }
+child { node {token: ENDFOR         lexical unit: ENDFOR}
+ }
+ }
+ }
+child { node {token:  $\backslash$  lexical unit: ENDLINE}
+ }
+child { node {<Code>}
+child { node {<Instruction>}
+child { node {<Print>}
+child { node {token: PRINT          lexical unit: PRINT}
+ }
+child { node {token: (              lexical unit: LPAREN}
+ }
+child { node {<ExpList>}
+child { node {<ExprArith>}
 child { node {<Term>}
 child { node {<Atom>}
-child { node {token: 3              lexical unit: NUMBER}
+child { node {token: result         lexical unit: VARNAME}
  }
  }
 child { node {<TermPrim>}
@@ -47,21 +261,89 @@ child { node {$\varepsilon$}
 child { node {<ExprArithPrim>}
 child { node {$\varepsilon$}
  }
+ }
+ }
+child { node {<ExpListPrim>}
+child { node {$\varepsilon$}
  }
  }
  }
 child { node {token: )              lexical unit: RPAREN}
  }
  }
-child { node {<TermPrim>}
+ }
+child { node {token:  $\backslash$  lexical unit: ENDLINE}
+ }
+child { node {<Code>}
 child { node {$\varepsilon$}
  }
+ }
+ }
+ }
+child { node {<IfSeq>}
+child { node {token: ELSE           lexical unit: ELSE}
+ }
+child { node {token:  $\backslash$  lexical unit: ENDLINE}
+ }
+child { node {<Code>}
+child { node {<Instruction>}
+child { node {<Print>}
+child { node {token: PRINT          lexical unit: PRINT}
+ }
+child { node {token: (              lexical unit: LPAREN}
+ }
+child { node {<ExpList>}
+child { node {<ExprArith>}
+child { node {<Term>}
+child { node {<Atom>}
+child { node {token: -              lexical unit: MINUS}
+ }
+child { node {<Atom>}
+child { node {token: 1              lexical unit: NUMBER}
+ }
+ }
+ }
+child { node {<TermPrim>}
+child { node {$\varepsilon$}
  }
  }
  }
 child { node {<ExprArithPrim>}
 child { node {$\varepsilon$}
  }
+ }
+ }
+child { node {<ExpListPrim>}
+child { node {$\varepsilon$}
+ }
+ }
+ }
+child { node {token: )              lexical unit: RPAREN}
+ }
+ }
+ }
+child { node {token:  $\backslash$  lexical unit: ENDLINE}
+ }
+child { node {<Code>}
+child { node {$\varepsilon$}
+ }
+ }
+ }
+child { node {token: ENDIF          lexical unit: ENDIF}
+ }
+ }
+ }
+ }
+child { node {token:  $\backslash$  lexical unit: ENDLINE}
+ }
+child { node {<Code>}
+child { node {$\varepsilon$}
+ }
+ }
+ }
+ }
+ }
+child { node {token: ENDPROG        lexical unit: ENDPROG}
  }
 ;
 \end{tikzpicture}

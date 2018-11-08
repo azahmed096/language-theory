@@ -51,7 +51,7 @@ Ignore 		   = " " | "\t"
 	"BEGINPROG"         {return new Symbol(LexicalUnit.BEGINPROG, yyline, yycolumn, yytext());}
 	"ENDPROG"           {return new Symbol(LexicalUnit.ENDPROG, yyline, yycolumn, yytext());}
 	"VARIABLES"         {return new Symbol(LexicalUnit.VARIABLES, yyline, yycolumn, yytext());}
-	{EndLine}           {return new Symbol(LexicalUnit.ENDLINE, yyline, yycolumn, "\\n");}
+	{EndLine}           {return new Symbol(LexicalUnit.ENDLINE, yyline, yycolumn, " $\\backslash$ ");}
 	{ProgName}          {return new Symbol(LexicalUnit.PROGNAME, yyline, yycolumn, yytext());}
 	","                 {return new Symbol(LexicalUnit.COMMA, yyline, yycolumn, yytext());}
 	{VarName}			{

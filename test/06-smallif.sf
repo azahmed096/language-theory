@@ -1,0 +1,3 @@
+IF (number >= 0) THEN
+    READ(x)
+ENDIF
