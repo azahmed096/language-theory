@@ -1,4 +1,6 @@
 import java.util.Iterator;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,14 +18,19 @@ public class Parser {
         rules.add(Integer.toString(number));
     }
 
-    public ParseTree beginParse(){
+    public ParseTree beginParse(Config config) throws IOException{
         rules = new ArrayList<>();
-       // System.out.println(EPS.isEpsilon() + "epslion?");
         lookAhead = symbols.next();
         ParseTree res = varProgram();
-        //ParseTree.print(res, 0);
-        // System.out.println(String.join(" ", rules));
-        System.out.println(res.toLaTeX());
+        
+        if (config.hasTexFile()){
+            OutputStreamWriter stream = config.getTexStream();
+            stream.write(res.toLaTeX());
+            stream.close();
+        }
+
+        System.out.println(String.join(" ", rules));
+
         if (this.lookAhead.getType() != LexicalUnit.EOS){
             // consumed entirly?
             throw new RuntimeException();
