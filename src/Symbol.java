@@ -9,7 +9,8 @@ public class Symbol{
 	public Symbol(LexicalUnit unit,int line,int column,Object value){
     this.type	= unit;
 		this.line	= line+1;
-		this.column	= column;
+		// ajout du +1 pour la colonne
+		this.column	= column+1;
 		this.value	= value;
 	}
 	

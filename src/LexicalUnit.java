@@ -1,19 +1,19 @@
 public enum LexicalUnit{
     BEGINPROG,
-    PROGNAME,
+    PROGNAME("a program name"),
     ENDLINE,
     ENDPROG,
     VARIABLES,
-    COMMA,
+    COMMA(","),
     VARNAME,
-    ASSIGN,
-    NUMBER,
-    LPAREN,
-    RPAREN,
-    MINUS,
-    PLUS,
-    TIMES,
-    DIVIDE,
+    ASSIGN(":="),
+    NUMBER("a number"),
+    LPAREN("("),
+    RPAREN(")"),
+    MINUS("-"),
+    PLUS("+"),
+    TIMES("*"),
+    DIVIDE("/"),
     IF,
     THEN,
     ENDIF,
@@ -21,12 +21,12 @@ public enum LexicalUnit{
     NOT,
     AND,
     OR,
-    EQ,
-    GEQ,
-    GT,
-    LEQ,
-    LT,
-    NEQ,
+    EQ("="),
+    GEQ(">="),
+    GT(">"),
+    LEQ("<="),
+    LT("<"),
+    NEQ("<>"),
     WHILE,
     DO,
     ENDWHILE,
@@ -36,5 +36,17 @@ public enum LexicalUnit{
     PRINT,
     READ,
     EPSILON,
-    EOS
+    EOS;
+    private String verbose;
+    LexicalUnit(){
+        verbose = toString();
+    }
+
+    LexicalUnit(String verbose){
+        this.verbose = verbose;
+    }
+
+    public String getVerbose(){
+        return verbose;
+    }
 }

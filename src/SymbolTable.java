@@ -14,7 +14,7 @@ public class SymbolTable {
      */
     public SymbolTable(){
         // The tree map keys are sorted in alphabetical order.
-        identifiers = new TreeMap<>();
+        identifiers = new TreeMap<Object, Integer>();
     }
 
     /**

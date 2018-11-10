@@ -11,7 +11,7 @@ public class Main {
 			System.err.println(cfg.getError());
 		} else {
 			SymbolTable table = new SymbolTable();
-			List<Symbol> symboles = new ArrayList<>();
+			List<Symbol> symboles = new ArrayList<Symbol>();
 			java.io.Reader reader = cfg.getFortranReader();
 			Lexer5 scanner = new Lexer5(reader);
 			Symbol symbol;
@@ -29,8 +29,11 @@ public class Main {
 			System.out.println(table);*/
 			symboles.add(new Symbol(LexicalUnit.EOS));
 			Iterator<Symbol> iterator = symboles.iterator();
-
-			new Parser(iterator).beginParse(cfg);
+			try{
+				new Parser(iterator).beginParse(cfg);
+			} catch(UnexpectedTokenException e){
+				System.err.println("Unexpected token" + e.getMessage());
+			}
 		}
 	}
 }

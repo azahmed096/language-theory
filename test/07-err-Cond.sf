@@ -1,0 +1,13 @@
+BEGINPROG Factorial
+VARIABLES number, result
+  READ(number)
+  result := 1
+  IF (number) THEN
+    FOR i := 1 TO number DO
+      result := result * i
+    ENDFOR
+    PRINT(result)
+  ELSE
+    PRINT(-1)
+  ENDIF
+ENDPROG

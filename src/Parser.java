@@ -4,40 +4,56 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Parser {
     private Symbol lookAhead;
     private Iterator<Symbol> symbols;
     private List<Integer> rules;
 
+    /**
+     * 
+     * @param symbols a stream of token, the last token should be of type EOS
+    
+     */
     public Parser(Iterator<Symbol> symbols) {
         this.symbols = symbols;
     }
 
+    /**
+     * Should be called when a rule is applied
+     * 
+     * @param number number of the production
+    
+     */
     private void rule(int number) {
         rules.add(number);
     }
 
+    /**
+     * Print rules numbers seperated by space except if the config is in verbose
+     * mode, it separate on lines and print the rule string. Write latex file if
+     * config specify it
+     * 
+     * @param config
+     * @return a ParseTree derivated from symbols iterator.
+     * @throws IOException
+    
+     */
     public ParseTree beginParse(Config config) throws IOException {
-        rules = new ArrayList<>();
+        rules = new ArrayList<Integer>();
         lookAhead = symbols.next();
         ParseTree res = varProgram();
 
-        Stream<String> rulesStream;
+        List display = rules;
+        // default separator is space
         String sep = " ";
 
         if (config.isVerbose()) {
-            rulesStream = rules.stream().map((r) -> {
-                return r + " " + Grammar.rule(r);
-            });
+            display = new ArrayList();
+            for (int rule: rules){
+                display.add(rule + " " + Grammar.rule(rule));
+            }
             sep = "\n";
-        } else {
-            rulesStream = rules.stream().map((r) -> {
-                return Integer.toString(r);
-            });
         }
 
         if (config.hasTexFile()) {
@@ -46,7 +62,7 @@ public class Parser {
             stream.close();
         }
 
-        System.out.println(String.join(sep, rulesStream.collect(Collectors.toList())));
+        System.out.println(Java8util.Stringjoin(sep, display));
 
         if (this.lookAhead.getType() != LexicalUnit.EOS) {
             // consumed entirly?
@@ -55,6 +71,34 @@ public class Parser {
         return res;
     }
 
+    private void unexpectedTokenHelper(LexicalUnit... units) {
+        String ex_string;
+
+        if (units.length > 1) {
+            // initially we were using List.stream() but it is not available for java 1.6
+            String[] verboses = new String[units.length];
+            for (int i = 0; i < verboses.length; ++i) {
+                verboses[i] = units[i].getVerbose();
+            }
+            ex_string = "one of :\n\t\t" + Java8util.Stringjoin("\n\t\t", Arrays.asList(verboses));
+        } else {
+            ex_string = units[0].getVerbose();
+        }
+
+        throw new UnexpectedTokenException(
+                "\n\t" + "at line " + lookAhead.getLine() + " column " + lookAhead.getColumn() + "\n\texpected "
+                        + ex_string + "\n\tbut found \"" + lookAhead.getValue() + "\"");
+    }
+
+    /**
+     * Try to match the given lexical unit with the next token
+     * 
+     * @exception UnexpectedTokenException if the token does not correspond with
+     *                                     input
+     * @param unit expected token type
+     * @return ParseTree with single terminal child
+    
+     */
     private ParseTree match(LexicalUnit unit) {
         if (lookAhead.getType() == unit) {
             // System.out.println("Match: "+unit);
@@ -64,23 +108,29 @@ public class Parser {
              * Thread.currentThread().getStackTrace(); for (int i = 0; i < e.length - 3;
              * ++i){ System.out.println("\t\t\t"+ e[i]); }
              * System.out.println("End of stack");
+            
              */
             ParseTree res = new ParseTree(lookAhead);
             //
             lookAhead = this.symbols.next();
             return res;
         }
-
-        throw new RuntimeException("have" + lookAhead.getType() + " excpect " + unit);
-
+        unexpectedTokenHelper(unit);
+        return null;
     }
 
+    /** Method for the variable <Program>
+     * 
+     */
     private ParseTree varProgram() {
         rule(1);
         return new ParseTree("<Program>", Arrays.asList(match(LexicalUnit.BEGINPROG), match(LexicalUnit.PROGNAME),
                 match(LexicalUnit.ENDLINE), varVariables(), varCode(), match(LexicalUnit.ENDPROG)));
     }
 
+    /** Method for the variable <Variables>
+     * 
+     */
     private ParseTree varVariables() {
         if (lookAhead.getType() == LexicalUnit.VARIABLES) {
             rule(2);
@@ -93,11 +143,12 @@ public class Parser {
     }
 
     private ParseTree getEpsilon(String from) {
-        List<ParseTree> sons = new ArrayList<>();
-        sons.add(EPS);
-        return new ParseTree(from, sons);
+        return new ParseTree(from, Arrays.asList(EPS));
     }
 
+    /** Method for the variable <VarList>
+     * 
+     */
     private ParseTree varVarList() {
         rule(4);
         return new ParseTree("<VarList>", Arrays.asList(match(LexicalUnit.VARNAME), varVarListPrim()));
@@ -105,6 +156,9 @@ public class Parser {
 
     private static ParseTree EPS = new ParseTree(new Symbol(LexicalUnit.EPSILON));
 
+    /** Method for the variable <VarListPrim>
+     * 
+     */
     private ParseTree varVarListPrim() {
 
         if (lookAhead.getType() == LexicalUnit.COMMA) {
@@ -117,6 +171,9 @@ public class Parser {
         }
     }
 
+    /** Method for the variable <Code>
+     * 
+     */
     private ParseTree varCode() {
         switch (lookAhead.getType()) {
         case VARNAME:
@@ -132,6 +189,9 @@ public class Parser {
         return getEpsilon("<Code>");
     }
 
+    /** Method for the variable <Instruction>
+     * 
+     */
     private ParseTree varInstruction() {
         switch (lookAhead.getType()) {
         case VARNAME:
@@ -153,17 +213,24 @@ public class Parser {
             rule(14);
             return new ParseTree("<Instruction>", Arrays.asList(varRead()));
         default:
-            throw new RuntimeException("...");
+            unexpectedTokenHelper(LexicalUnit.VARNAME, LexicalUnit.IF, LexicalUnit.WHILE, LexicalUnit.FOR,
+                    LexicalUnit.PRINT, LexicalUnit.READ);
         }
-        // return null;
+        return null;
     }
 
+    /** Method for the variable <Assign>
+     * 
+     */
     private ParseTree varAssign() {
         rule(15);
         return new ParseTree("<Assign>",
                 Arrays.asList(match(LexicalUnit.VARNAME), match(LexicalUnit.ASSIGN), varExprArith()));
     }
 
+    /** Method for the variable <ExprArith>
+     * 
+     */
     private ParseTree varExprArith() {
         rule(16);
         ArrayList sons = new ArrayList();
@@ -172,6 +239,9 @@ public class Parser {
         return new ParseTree("<ExprArith>", sons);
     }
 
+    /** Method for the variable <ExprArithPrim>
+     * 
+     */
     private ParseTree varExprArithPrim() {
         LexicalUnit type = lookAhead.getType();
         ArrayList sons = new ArrayList();
@@ -193,6 +263,9 @@ public class Parser {
         return new ParseTree("<ExprArithPrim>", sons);
     }
 
+    /** Method for the variable <Term>
+     * 
+     */
     private ParseTree varTerm() {
         ArrayList sons = new ArrayList();
         rule(20);
@@ -203,6 +276,9 @@ public class Parser {
         return new ParseTree("<Term>", sons);
     }
 
+    /** Method for the variable <TermPrim>
+     * 
+     */
     private ParseTree varTermPrim() {
         LexicalUnit type = lookAhead.getType();
         ArrayList<ParseTree> sons = new ArrayList();
@@ -223,6 +299,9 @@ public class Parser {
         return new ParseTree("<TermPrim>", sons);
     }
 
+    /** Method for the variable <Atom>
+     * 
+     */
     private ParseTree varAtom() {
         LexicalUnit type = lookAhead.getType();
         List<ParseTree> sons = null;
@@ -244,17 +323,23 @@ public class Parser {
             sons = Arrays.asList(match(LexicalUnit.MINUS), varAtom());
             break;
         default:
-            throw new RuntimeException("kfdksl");
+            unexpectedTokenHelper(LexicalUnit.NUMBER, LexicalUnit.VARNAME, LexicalUnit.LPAREN, LexicalUnit.MINUS);
         }
         return new ParseTree("<Atom>", sons);
     }
 
+    /** Method for the variable <If>
+     * 
+     */
     private ParseTree varIf() {
         rule(28);
         return new ParseTree("<If>", Arrays.asList(match(LexicalUnit.IF), match(LexicalUnit.LPAREN), varCond(),
                 match(LexicalUnit.RPAREN), match(LexicalUnit.THEN), match(LexicalUnit.ENDLINE), varCode(), varIfSeq()));
     }
 
+    /** Method for the variable <IfSeq>
+     * 
+     */
     private ParseTree varIfSeq() {
         switch (lookAhead.getType()) {
         case ENDIF:
@@ -265,15 +350,22 @@ public class Parser {
             return new ParseTree("<IfSeq>", Arrays.asList(match(LexicalUnit.ELSE), match(LexicalUnit.ENDLINE),
                     varCode(), match(LexicalUnit.ENDIF)));
         default:
-            throw new RuntimeException("...");
+            unexpectedTokenHelper(LexicalUnit.ENDIF, LexicalUnit.ELSE);
+            return null;
         }
     }
 
+    /** Method for the variable <Cond>
+     * 
+     */
     private ParseTree varCond() {
         rule(31);
         return new ParseTree("<Cond>", Arrays.asList(varAndCond(), varCondPrim()));
     }
 
+    /** Method for the variable <CondPrim>
+     * 
+     */
     private ParseTree varCondPrim() {
 
         if (lookAhead.getType() == LexicalUnit.OR) {
@@ -284,11 +376,17 @@ public class Parser {
         return getEpsilon("<CondPrim>");
     }
 
+    /** Method for the variable <AndCond>
+     * 
+     */
     private ParseTree varAndCond() {
         rule(34);
         return new ParseTree("<AndCond>", Arrays.asList(varSimpleCond(), varAndCondPrim()));
     }
 
+    /** Method for the variable <AndCondPrim>
+     * 
+     */
     private ParseTree varAndCondPrim() {
 
         if (lookAhead.getType() == LexicalUnit.AND) {
@@ -300,6 +398,9 @@ public class Parser {
         return getEpsilon("<AndCondPrim>");
     }
 
+    /** Method for the variable <SimpleCond>
+     * 
+     */
     private ParseTree varSimpleCond() {
         if (lookAhead.getType() != LexicalUnit.NOT) {
             rule(37);
@@ -310,6 +411,9 @@ public class Parser {
         }
     }
 
+    /** Method for the variable <Comp>
+     * 
+     */
     private ParseTree varComp() {
         switch (lookAhead.getType()) {
         case EQ:
@@ -331,11 +435,15 @@ public class Parser {
             rule(44);
             return new ParseTree("<Comp>", Arrays.asList(match(LexicalUnit.NEQ)));
         default:
-            throw new RuntimeException("...");
-
+            unexpectedTokenHelper(LexicalUnit.EQ, LexicalUnit.LEQ, LexicalUnit.LT, LexicalUnit.GEQ, LexicalUnit.GT,
+                    LexicalUnit.NEQ);
+            return null; // never accessed
         }
     }
 
+    /** Method for the variable <While>
+     * 
+     */
     private ParseTree varWhile() {
         rule(45);
         return new ParseTree("<While>",
@@ -343,6 +451,9 @@ public class Parser {
                         match(LexicalUnit.DO), match(LexicalUnit.ENDLINE), varCode(), match(LexicalUnit.ENDWHILE)));
     }
 
+    /** Method for the variable <For>
+     * 
+     */
     private ParseTree varFor() {
         rule(46);
         return new ParseTree("<For>",
@@ -351,23 +462,35 @@ public class Parser {
                         match(LexicalUnit.ENDLINE), varCode(), match(LexicalUnit.ENDFOR)));
     }
 
+    /** Method for the variable <Print>
+     * 
+     */
     private ParseTree varPrint() {
         rule(47);
         return new ParseTree("<Print>", Arrays.asList(match(LexicalUnit.PRINT), match(LexicalUnit.LPAREN), varExpList(),
                 match(LexicalUnit.RPAREN)));
     }
 
+    /** Method for the variable <Read>
+     * 
+     */
     private ParseTree varRead() {
         rule(48);
         return new ParseTree("<Read>", Arrays.asList(match(LexicalUnit.READ), match(LexicalUnit.LPAREN), varVarList(),
                 match(LexicalUnit.RPAREN)));
     }
 
+    /** Method for the variable <ExpList>
+     * 
+     */
     private ParseTree varExpList() {
         rule(49);
         return new ParseTree("<ExpList>", Arrays.asList(varExprArith(), varExpListPrim()));
     }
 
+    /** Method for the variable <ExpListPrim>
+     * 
+     */
     private ParseTree varExpListPrim() {
 
         if (lookAhead.getType() == LexicalUnit.COMMA) {

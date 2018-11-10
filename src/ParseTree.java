@@ -85,7 +85,9 @@ public class ParseTree {
         }
         return treeTikZ.toString();
     }
-
+    /** Return better latex formatting for terminals
+     * 
+     */
     private static String labelToTex(Symbol label){
         if (label.isEpsilon()){
             return "$\\varepsilon$";
