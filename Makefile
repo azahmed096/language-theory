@@ -16,13 +16,13 @@ jar: compile
 report: $(DOC_DIR)/report.pdf
 
 tree: $(TEX_FILE)
-
+	lualatex $<
 $(DOC_DIR)/report.pdf: $(DOC_DIR)/report.tex
 	cd $(DOC_DIR) && xelatex report.tex
 
 compile: $(CLASS_PATH)/Grammar.class $(CLASS_PATH)/Config.class $(CLASS_PATH)/UnexpectedTokenException.class $(CLASS_PATH)/LexicalUnit.class $(CLASS_PATH)/Symbol.class $(CLASS_PATH)/Lexer5.class $(CLASS_PATH)/SymbolTable.class $(CLASS_PATH)/ParseTree.class $(CLASS_PATH)/Parser.class $(CLASS_PATH)/Main.class
 
-execute: jar
+execute: jar tree
 	java -jar $(DIST_DIR)/part2.jar -v -wt $(TEX_FILE) $(TEST_DIR)/$(TEST_FILE) # -nest-comment.sf
 
 execute_not_verbose: jar

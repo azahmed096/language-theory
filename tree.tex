@@ -9,22 +9,22 @@
 
 \begin{tikzpicture}[tree layout]
 \node {<Program>}
-child { node {token: BEGINPROG      lexical unit: BEGINPROG}
+child { node {\textbf{BEGINPROG} \textit{BEGINPROG}}
  }
-child { node {token: Factorial      lexical unit: PROGNAME}
+child { node {\textbf{PROGNAME} \textit{Factorial}}
  }
-child { node {token:  $\backslash$  lexical unit: ENDLINE}
+child { node {\textbf{ENDLINE} \textit{ $\backslash$ }}
  }
 child { node {<Variables>}
-child { node {token: VARIABLES      lexical unit: VARIABLES}
+child { node {\textbf{VARIABLES} \textit{VARIABLES}}
  }
 child { node {<VarList>}
-child { node {token: number         lexical unit: VARNAME}
+child { node {\textbf{VARNAME} \textit{number}}
  }
 child { node {<VarListPrim>}
-child { node {token: ,              lexical unit: COMMA}
+child { node {\textbf{COMMA} \textit{,}}
  }
-child { node {token: result         lexical unit: VARNAME}
+child { node {\textbf{VARNAME} \textit{result}}
  }
 child { node {<VarListPrim>}
 child { node {$\varepsilon$}
@@ -32,41 +32,41 @@ child { node {$\varepsilon$}
  }
  }
  }
-child { node {token:  $\backslash$  lexical unit: ENDLINE}
+child { node {\textbf{ENDLINE} \textit{ $\backslash$ }}
  }
  }
 child { node {<Code>}
 child { node {<Instruction>}
 child { node {<Read>}
-child { node {token: READ           lexical unit: READ}
+child { node {\textbf{READ} \textit{READ}}
  }
-child { node {token: (              lexical unit: LPAREN}
+child { node {\textbf{LPAREN} \textit{(}}
  }
 child { node {<VarList>}
-child { node {token: number         lexical unit: VARNAME}
+child { node {\textbf{VARNAME} \textit{number}}
  }
 child { node {<VarListPrim>}
 child { node {$\varepsilon$}
  }
  }
  }
-child { node {token: )              lexical unit: RPAREN}
+child { node {\textbf{RPAREN} \textit{)}}
  }
  }
  }
-child { node {token:  $\backslash$  lexical unit: ENDLINE}
+child { node {\textbf{ENDLINE} \textit{ $\backslash$ }}
  }
 child { node {<Code>}
 child { node {<Instruction>}
 child { node {<Assign>}
-child { node {token: result         lexical unit: VARNAME}
+child { node {\textbf{VARNAME} \textit{result}}
  }
-child { node {token: :=             lexical unit: ASSIGN}
+child { node {\textbf{ASSIGN} \textit{:=}}
  }
 child { node {<ExprArith>}
 child { node {<Term>}
 child { node {<Atom>}
-child { node {token: 1              lexical unit: NUMBER}
+child { node {\textbf{NUMBER} \textit{1}}
  }
  }
 child { node {<TermPrim>}
@@ -81,14 +81,14 @@ child { node {$\varepsilon$}
  }
  }
  }
-child { node {token:  $\backslash$  lexical unit: ENDLINE}
+child { node {\textbf{ENDLINE} \textit{ $\backslash$ }}
  }
 child { node {<Code>}
 child { node {<Instruction>}
 child { node {<If>}
-child { node {token: IF             lexical unit: IF}
+child { node {\textbf{IF} \textit{IF}}
  }
-child { node {token: (              lexical unit: LPAREN}
+child { node {\textbf{LPAREN} \textit{(}}
  }
 child { node {<Cond>}
 child { node {<AndCond>}
@@ -96,7 +96,7 @@ child { node {<SimpleCond>}
 child { node {<ExprArith>}
 child { node {<Term>}
 child { node {<Atom>}
-child { node {token: number         lexical unit: VARNAME}
+child { node {\textbf{VARNAME} \textit{number}}
  }
  }
 child { node {<TermPrim>}
@@ -110,13 +110,13 @@ child { node {$\varepsilon$}
  }
  }
 child { node {<Comp>}
-child { node {token: >=             lexical unit: GEQ}
+child { node {\textbf{GEQ} \textit{>=}}
  }
  }
 child { node {<ExprArith>}
 child { node {<Term>}
 child { node {<Atom>}
-child { node {token: 0              lexical unit: NUMBER}
+child { node {\textbf{NUMBER} \textit{0}}
  }
  }
 child { node {<TermPrim>}
@@ -140,25 +140,25 @@ child { node {$\varepsilon$}
  }
  }
  }
-child { node {token: )              lexical unit: RPAREN}
+child { node {\textbf{RPAREN} \textit{)}}
  }
-child { node {token: THEN           lexical unit: THEN}
+child { node {\textbf{THEN} \textit{THEN}}
  }
-child { node {token:  $\backslash$  lexical unit: ENDLINE}
+child { node {\textbf{ENDLINE} \textit{ $\backslash$ }}
  }
 child { node {<Code>}
 child { node {<Instruction>}
 child { node {<For>}
-child { node {token: FOR            lexical unit: FOR}
+child { node {\textbf{FOR} \textit{FOR}}
  }
-child { node {token: i              lexical unit: VARNAME}
+child { node {\textbf{VARNAME} \textit{i}}
  }
-child { node {token: :=             lexical unit: ASSIGN}
+child { node {\textbf{ASSIGN} \textit{:=}}
  }
 child { node {<ExprArith>}
 child { node {<Term>}
 child { node {<Atom>}
-child { node {token: 1              lexical unit: NUMBER}
+child { node {\textbf{NUMBER} \textit{1}}
  }
  }
 child { node {<TermPrim>}
@@ -171,12 +171,12 @@ child { node {$\varepsilon$}
  }
  }
  }
-child { node {token: TO             lexical unit: TO}
+child { node {\textbf{TO} \textit{TO}}
  }
 child { node {<ExprArith>}
 child { node {<Term>}
 child { node {<Atom>}
-child { node {token: number         lexical unit: VARNAME}
+child { node {\textbf{VARNAME} \textit{number}}
  }
  }
 child { node {<TermPrim>}
@@ -189,28 +189,28 @@ child { node {$\varepsilon$}
  }
  }
  }
-child { node {token: DO             lexical unit: DO}
+child { node {\textbf{DO} \textit{DO}}
  }
-child { node {token:  $\backslash$  lexical unit: ENDLINE}
+child { node {\textbf{ENDLINE} \textit{ $\backslash$ }}
  }
 child { node {<Code>}
 child { node {<Instruction>}
 child { node {<Assign>}
-child { node {token: result         lexical unit: VARNAME}
+child { node {\textbf{VARNAME} \textit{result}}
  }
-child { node {token: :=             lexical unit: ASSIGN}
+child { node {\textbf{ASSIGN} \textit{:=}}
  }
 child { node {<ExprArith>}
 child { node {<Term>}
 child { node {<Atom>}
-child { node {token: result         lexical unit: VARNAME}
+child { node {\textbf{VARNAME} \textit{result}}
  }
  }
 child { node {<TermPrim>}
-child { node {token: *              lexical unit: TIMES}
+child { node {\textbf{TIMES} \textit{*}}
  }
 child { node {<Atom>}
-child { node {token: i              lexical unit: VARNAME}
+child { node {\textbf{VARNAME} \textit{i}}
  }
  }
 child { node {<TermPrim>}
@@ -226,31 +226,31 @@ child { node {$\varepsilon$}
  }
  }
  }
-child { node {token:  $\backslash$  lexical unit: ENDLINE}
+child { node {\textbf{ENDLINE} \textit{ $\backslash$ }}
  }
 child { node {<Code>}
 child { node {$\varepsilon$}
  }
  }
  }
-child { node {token: ENDFOR         lexical unit: ENDFOR}
+child { node {\textbf{ENDFOR} \textit{ENDFOR}}
  }
  }
  }
-child { node {token:  $\backslash$  lexical unit: ENDLINE}
+child { node {\textbf{ENDLINE} \textit{ $\backslash$ }}
  }
 child { node {<Code>}
 child { node {<Instruction>}
 child { node {<Print>}
-child { node {token: PRINT          lexical unit: PRINT}
+child { node {\textbf{PRINT} \textit{PRINT}}
  }
-child { node {token: (              lexical unit: LPAREN}
+child { node {\textbf{LPAREN} \textit{(}}
  }
 child { node {<ExpList>}
 child { node {<ExprArith>}
 child { node {<Term>}
 child { node {<Atom>}
-child { node {token: result         lexical unit: VARNAME}
+child { node {\textbf{VARNAME} \textit{result}}
  }
  }
 child { node {<TermPrim>}
@@ -268,11 +268,11 @@ child { node {$\varepsilon$}
  }
  }
  }
-child { node {token: )              lexical unit: RPAREN}
+child { node {\textbf{RPAREN} \textit{)}}
  }
  }
  }
-child { node {token:  $\backslash$  lexical unit: ENDLINE}
+child { node {\textbf{ENDLINE} \textit{ $\backslash$ }}
  }
 child { node {<Code>}
 child { node {$\varepsilon$}
@@ -281,25 +281,25 @@ child { node {$\varepsilon$}
  }
  }
 child { node {<IfSeq>}
-child { node {token: ELSE           lexical unit: ELSE}
+child { node {\textbf{ELSE} \textit{ELSE}}
  }
-child { node {token:  $\backslash$  lexical unit: ENDLINE}
+child { node {\textbf{ENDLINE} \textit{ $\backslash$ }}
  }
 child { node {<Code>}
 child { node {<Instruction>}
 child { node {<Print>}
-child { node {token: PRINT          lexical unit: PRINT}
+child { node {\textbf{PRINT} \textit{PRINT}}
  }
-child { node {token: (              lexical unit: LPAREN}
+child { node {\textbf{LPAREN} \textit{(}}
  }
 child { node {<ExpList>}
 child { node {<ExprArith>}
 child { node {<Term>}
 child { node {<Atom>}
-child { node {token: -              lexical unit: MINUS}
+child { node {\textbf{MINUS} \textit{-}}
  }
 child { node {<Atom>}
-child { node {token: 1              lexical unit: NUMBER}
+child { node {\textbf{NUMBER} \textit{1}}
  }
  }
  }
@@ -318,32 +318,32 @@ child { node {$\varepsilon$}
  }
  }
  }
-child { node {token: )              lexical unit: RPAREN}
+child { node {\textbf{RPAREN} \textit{)}}
  }
  }
  }
-child { node {token:  $\backslash$  lexical unit: ENDLINE}
- }
-child { node {<Code>}
-child { node {$\varepsilon$}
- }
- }
- }
-child { node {token: ENDIF          lexical unit: ENDIF}
- }
- }
- }
- }
-child { node {token:  $\backslash$  lexical unit: ENDLINE}
+child { node {\textbf{ENDLINE} \textit{ $\backslash$ }}
  }
 child { node {<Code>}
 child { node {$\varepsilon$}
  }
  }
  }
+child { node {\textbf{ENDIF} \textit{ENDIF}}
  }
  }
-child { node {token: ENDPROG        lexical unit: ENDPROG}
+ }
+ }
+child { node {\textbf{ENDLINE} \textit{ $\backslash$ }}
+ }
+child { node {<Code>}
+child { node {$\varepsilon$}
+ }
+ }
+ }
+ }
+ }
+child { node {\textbf{ENDPROG} \textit{ENDPROG}}
  }
 ;
 \end{tikzpicture}

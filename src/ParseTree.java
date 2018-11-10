@@ -76,10 +76,7 @@ public class ParseTree {
     public String toTikZ() {
         StringBuilder treeTikZ = new StringBuilder();
         treeTikZ.append("node {");
-        if (label.isEpsilon()){
-            treeTikZ.append("$\\varepsilon$");
-        }
-        else treeTikZ.append(label.toString());
+        treeTikZ.append(labelToTex(label));
         treeTikZ.append("}\n");
         for (ParseTree child: children) {
             treeTikZ.append("child { ");
@@ -87,6 +84,15 @@ public class ParseTree {
             treeTikZ.append(" }\n");
         }
         return treeTikZ.toString();
+    }
+
+    private static String labelToTex(Symbol label){
+        if (label.isEpsilon()){
+            return "$\\varepsilon$";
+        } else if (!label.isTerminal()){
+	    return label.getValue().toString();
+        }
+        return String.format("\\textbf{%s} \\textit{%s}", label.getType(), label.getValue());
     }
 
     /** Writes the tree as a TikZ picture.
