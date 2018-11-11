@@ -22,7 +22,7 @@ public class Main {
 					table.foundIdentifier(symbol);
 				}
 			}
-/*
+			/*
 			for (Symbol s: symboles){
 				System.out.println(s);
 			}

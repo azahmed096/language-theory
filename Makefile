@@ -3,7 +3,7 @@ SOURCE_DIR=$(shell readlink -f ./src)
 CLASS_PATH=$(shell readlink -f ./build)
 DOC_DIR=$(shell readlink -f ./doc)
 TEST_DIR=$(shell readlink -f ./test)
-TEST_FILE=08-err-Print-.sf
+TEST_FILE=00-Factorial.sf
 TEX_FILE=tree.tex
 DIST_DIR=$(shell readlink -f ./dist)
 
@@ -16,7 +16,7 @@ jar: compile
 report: $(DOC_DIR)/report.pdf
 
 tree: execute $(TEX_FILE)
-	lualatex $<
+	lualatex $(TEX_FILE)
 $(DOC_DIR)/report.pdf: $(DOC_DIR)/report.tex
 	cd $(DOC_DIR) && xelatex report.tex
 

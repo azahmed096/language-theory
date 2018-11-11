@@ -1,0 +1,33 @@
+/* Comment
+on many lines :)
+*/
+
+BEGINPROG Factorial  // hello
+VARIABLES number, result // wolrd
+  READ(number) /*             !!      */
+  result /* base case is one */  := 1
+  IF (number >= 0) THEN
+    FOR i := 1 TO number DO
+      result := result * i
+    ENDFOR
+
+    // a
+    // b
+    /* 
+    c
+    */
+
+    PRINT(result)
+  ELSE
+    PRINT(-1)
+
+
+  ENDIF
+ENDPROG
+
+/* 123
+
+
+*/
+
+// Comment
