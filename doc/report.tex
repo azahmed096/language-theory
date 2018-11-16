@@ -5,111 +5,65 @@
 \maketitle
 \section{Introduction}
 In this project we were requested to design and write a compiler for Super-Fortran. It is a very simple 
-imperative language. The project is divided in 3 parts and for this first part we had to produce 
-the lexical analyser of the compiler.
+imperative language. The project is divided in 3 parts and for this second part we had to produce 
+the parser of the compiler. The parser is the tools that perform the syntax analysis of a sequences of tokens and verify if
+those tokens are conform to the rules of grammar. During the parsing, the parse had to build the derivation tree.
 
-The lexical analyser has been generated using JFlex which is a tool that take a specification (.flex file)
-as input with a set of regular expression and with each one we can associate java code that will
-be executed in each match.
+There exist severals methods of building a parser. In our case we choose to design a recursive decent ll(1) parser.
 
-\section{Regular expressions}
+\section{Grammar}
 
 
 \begin{description}
-    
-    
     \item[\texttt{Upper = [A-Z]}]
     Here we define a macro of a range that match any upper letter from A to Z.
-    
-    \item[\texttt{Lower = [a-z]}]
-    This is the same as the previous one but for lowers letters.
-    
-    \item[\texttt{Alpha          = \{Upper\}|\{Lower\}}]
-    The language of alpha define the union of the languages of the 2 previous macros.
-    
-    \item[\texttt{Numeric        = [0-9]}]
-    The range of all decimals digits that will be useful for matching numbers.
-    
-    \item[\texttt{AlphaNum	 = \{Alpha\}|\{Numeric\}}]
-    A macro that matches all alphanumerics characters.
-    
-    \item[\texttt{NZero          = [1-9]}]
-    We need non zero digit macro because a number literal can't begin with 0.
-    
-    \item[\texttt{Zero           = "0"}]
-    We need a macro for matching single zero which is the only number that begins with 0.
-    
-    \item[\texttt{VarName 	   = \{Lower\}(\{Numeric\}|\{Lower\})*}]
-    VarName is the macro defining a variable which starts with a lower case characters and contains only digits and 
-    lower case characters.
-    
-    \item[\texttt{EndLine        = "\textbackslash n"}]
-    This macro exist because it will be repeated several time and we want to avoid magic constants.
-    
-    \item[\texttt{Number         = \{Zero\}|(\{NZero\}\{Numeric\}*)}]
-    A number is a zero or a non zero digit followed by an arbitrary number of digits.
-    
-    \item[\texttt{ProgName =  \{Upper\}\{AlphaNum\}*(\{Lower\}|\{Numeric\})\{AlphaNum\}*}]
-    A program name start with an upper case characters and is said to be a non upper case word. 
-    The choice of the meaning of a non upper case word will be explained in the next section.
-    
-    \item[\texttt{BeginComment   = "/*"}] The begin of a multi line comment.
-
-    \item[\texttt{Ignore 		   = " " | "\textbackslash t"}] The ignored characters by the lexer. 
-
 \end{description}
 
 \section{Explanation of choices and hypotheses}
 
-\subsection{Macro definitions}
-We decided to use macros everywhere except when we face one character or a concatenation of two characters
-that will not be reused in the flex file because macros make the code more readable and the changes 
-in the input language easier.
+\subsection{Recursive descent}
+We choose to build a recursive descent parser because we found it to be more intuitive in the sense
+that the derivation tree correspond directly (except for epsilon)to the recursive calls and we also 
+found this method interesting in the sense that it offer easy debugging.
 
-\subsection{Unexpected tokens}
-Unexpected tokens are words that do not match with any regular expression. 
-We consider that they
-should not be simply ignored by the lexical analyser that's why an exception is thrown
-and for this reason
-we defined a macro \texttt{Ignore} for characters that should be ignored and are not a part of 
-the grammar of super Fortran.
+\subsubsection{Errors handling}
+In our recursive decent parsing, when we expect a specific terminal from the input but 
+we receive a different one we throw a syntax error, that tells to the user which terminal was expected.  
 
-\subsection{Non upper case word}
-For the matching of the Progname we had two choices on how to interpret a non upper case word.
-First we can define it as a word that contains at least one lower case character or the other option
-is a word that contains at least one digit or one lower case character.
+\subsection{Arbitrary number of endlines handling}
+The grammar does not allow to have mutliples endlines betweens instructions. But we supposed that
+the mutliples endline are important tools for the user to make the code more readable.
+For instance if the user want to make a clean documentation of his code.
 
-We took the second one because a word that contains a digit can't be confused with a keyword.
+To solve this problem, we could modify the grammar but
+this solution will overload the grammar's rules.
+That's why we decided to handle this problem at the lexer level.
 
+\paragraph{Start file endlines}
+All endlines before any other type of token are ignored.
 
+\paragraph{End file endline}
+All endlines after the (first occurence) ENDPROG token are ignored.
 
-\section{Bonus question}
-The difficulty with nested comments problem was to find a regular expression that recognize them.
-In fact the nested comments problem is similar to the problem of opening/closing parenthesis which is not a 
-regular language. For this reason the solution we found was to use jflex states in which we can put
-java code.
+\paragraph{Consecutive endlines}
+All others consecutives endlines are considered as a one endline token.
 
-\paragraph{}
-Nested comment requires to count (or to use a stack), opening and closing strings for comment. 
-With a java integer as a counter that increments when we find an opening sequence and decrements
-on a closing sequence then we can track if we are
-currently inside a comment. It is the case when the counter is positive. When the counter is equal to 0
-we are outside comments and when the counter is negative there is more closing sequences than needed and this 
-should be considered as a syntax error.
+\subsection{Endlines after short comments}
+In order to have the same output as the one in provided the .out file, the part 1 lexer 
+skips enldine after short comments. But this forces the user to put an additional empty line after
+each short comments. We changed the behaviour of the lexer.
 
+\subsection{Modification of provided classes}
 
-\paragraph{}
-Moreover we know that $L_i$ is a regular language iff it exists a finite automata A
-such that $L(A)$ = $L_i$ by Kleene's theorem, let's call $L_{nc}$ the language
-of nested comments and the word $w$ with $n$ opening/closing comment
-belongs to the language and should be accepted by the automata. By running A on $w$
-there will be at least one state that will be repeated by pigeon's hole principle.
-It will be repeated by Kleene's closure or by a loop between states. Hence this part
-can be repeated an arbitrary amount of time and one additional repeating can take the word out of $L_{nc}$. Meaning that $L(A) \neq L_{nc}$. 
+\paragraph{LexicalUnit}
+We decided to add a LexicalUnit instance called \texttt{EPSILON} for the $ \varepsilon $ because we need to implement the
+\texttt{isEpsilon} method called in the provided \texttt{ParseTree} class. We also added
+a method named \texttt{getVerbose} to print more readable errors.
 
+\paragraph{ParseTree}
+We added a method called \texttt{labelToTex} that gives better formatting for terminals in the 
+derivation tree than the \texttt{toString} method.
 
-\paragraph{}
-We did not implement nested comment support because they are forbidden and useless.
 
 \section{Tests files desciption}
 
@@ -120,13 +74,21 @@ We did not implement nested comment support because they are forbidden and usele
     \item[\texttt{04-Factorial-unexpectedword.sf}] This file contains an upper case word that is not a keyword. An unexpected token will be raised on reading.
 \end{description}
 
+\section{Action table}
+
 
 \section{Conclusion}
 
-As we said in the introduction we implemented a lexer for the Super-Fortran programming language.
+As we said in the introduction we implemented a LL(1) parser for the Super-Fortran programming language.
 
-During this project we learned how to build a lexical analyser.
-It allowed us to learn more about the first step of a compiler and to understand deeply how it works.
-We also learned that we can build a lexer without writing a tokenization algorithm.
+During this second part of the project we learned how to make a syntaxic analysis by
+the building of a parser.
+One major difficulty we faced was to transform the initial ambigous grammar to a none ambigous one
+and to check if our transformation of the grammar was good.
+A second difficulty was the verification of the firsts and follows because its easy to make mistakes
+because the grammar had many produces and terminals.
+
+But finally, this part of the project allowed us to learn more about the parsing step of a compiler 
+and to understand deeply how it works.
 
 \end{document}
