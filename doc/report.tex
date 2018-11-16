@@ -1,6 +1,7 @@
 \documentclass[12pt]{article}
 \title{INFO-F-403: Project Super-Fortran Part 1 Lexer analyser}
 \author{Sefu Kevin and Abou Zaidi Ahmed}
+\usepackage{textcomp}
 \begin{document}
 \maketitle
 \section{Introduction}
@@ -12,11 +13,60 @@ those tokens are conform to the rules of grammar. During the parsing, the parse 
 There exist severals methods of building a parser. In our case we choose to design a recursive decent ll(1) parser.
 
 \section{Grammar}
-
-
+We did not find any useless rule. They all are accessible and productive.
 \begin{description}
-    \item[\texttt{Upper = [A-Z]}]
-    Here we define a macro of a range that match any upper letter from A to Z.
+\item[\textbf{[1]}]{ \textbf{\textlangle{}Program\textrangle{}}  $\rightarrow$ BEGINPROG \textbf{[ProgName]} \textbf{[EndLine]} \textbf{\textlangle{}Variables\textrangle{}}  \textbf{\textlangle{}Code\textrangle{}}  ENDPROG}
+\item[\textbf{[2]}]{ \textbf{\textlangle{}Variables\textrangle{}}  $\rightarrow$ VARIABLES \textbf{\textlangle{}VarList\textrangle{}}  \textbf{[EndLine]}}
+\item[\textbf{[3]}]{ \textbf{\textlangle{}Variables\textrangle{}}  $\rightarrow \varepsilon$}
+\item[\textbf{[4]}]{ \textbf{\textlangle{}VarList\textrangle{}}  $\rightarrow$ \textbf{[VarName]} \textbf{\textlangle{}VarList\_prim\textrangle{}} }
+\item[\textbf{[5]}]{ \textbf{\textlangle{}VarList\_prim\textrangle{}}  $\rightarrow$ , \textbf{[VarName]} \textbf{\textlangle{}VarList\_prim\textrangle{}} }
+\item[\textbf{[6]}]{ \textbf{\textlangle{}VarList\_prim\textrangle{}}  $\rightarrow \varepsilon$}
+\item[\textbf{[7]}]{ \textbf{\textlangle{}Code\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}Instruction\textrangle{}}  \textbf{[EndLine]} \textbf{\textlangle{}Code\textrangle{}} }
+\item[\textbf{[8]}]{ \textbf{\textlangle{}Code\textrangle{}}  $\rightarrow \varepsilon$}
+\item[\textbf{[9]}]{ \textbf{\textlangle{}Instruction\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}Assign\textrangle{}} }
+\item[\textbf{[10]}]{ \textbf{\textlangle{}Instruction\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}If\textrangle{}} }
+\item[\textbf{[11]}]{ \textbf{\textlangle{}Instruction\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}While\textrangle{}} }
+\item[\textbf{[12]}]{ \textbf{\textlangle{}Instruction\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}For\textrangle{}} }
+\item[\textbf{[13]}]{ \textbf{\textlangle{}Instruction\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}Print\textrangle{}} }
+\item[\textbf{[14]}]{ \textbf{\textlangle{}Instruction\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}Read\textrangle{}} }
+\item[\textbf{[15]}]{ \textbf{\textlangle{}Assign\textrangle{}}  $\rightarrow$ \textbf{[VarName]} := \textbf{\textlangle{}ExprArith\textrangle{}} }
+\item[\textbf{[16]}]{ \textbf{\textlangle{}ExprArith\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}Term\textrangle{}}  \textbf{\textlangle{}ExprArith\_prim\textrangle{}} }
+\item[\textbf{[17]}]{ \textbf{\textlangle{}ExprArith\_prim\textrangle{}}  $\rightarrow$ + \textbf{\textlangle{}Term\textrangle{}}  \textbf{\textlangle{}ExprArith\_prim\textrangle{}} }
+\item[\textbf{[18]}]{ \textbf{\textlangle{}ExprArith\_prim\textrangle{}}  $\rightarrow$ - \textbf{\textlangle{}Term\textrangle{}}  \textbf{\textlangle{}ExprArith\_prim\textrangle{}} }
+\item[\textbf{[19]}]{ \textbf{\textlangle{}ExprArith\_prim\textrangle{}}  $\rightarrow \varepsilon$}
+\item[\textbf{[20]}]{ \textbf{\textlangle{}Term\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}Atom\textrangle{}}  \textbf{\textlangle{}Term\_prim\textrangle{}} }
+\item[\textbf{[21]}]{ \textbf{\textlangle{}Term\_prim\textrangle{}}  $\rightarrow$ * \textbf{\textlangle{}Atom\textrangle{}}  \textbf{\textlangle{}Term\_prim\textrangle{}} }
+\item[\textbf{[22]}]{ \textbf{\textlangle{}Term\_prim\textrangle{}}  $\rightarrow$ / \textbf{\textlangle{}Atom\textrangle{}}  \textbf{\textlangle{}Term\_prim\textrangle{}} }
+\item[\textbf{[23]}]{ \textbf{\textlangle{}Term\_prim\textrangle{}}  $\rightarrow \varepsilon$}
+\item[\textbf{[24]}]{ \textbf{\textlangle{}Atom\textrangle{}}  $\rightarrow$ \textbf{[Number]}}
+\item[\textbf{[25]}]{ \textbf{\textlangle{}Atom\textrangle{}}  $\rightarrow$ \textbf{[VarName]}}
+\item[\textbf{[26]}]{ \textbf{\textlangle{}Atom\textrangle{}}  $\rightarrow$ ( \textbf{\textlangle{}ExprArith\textrangle{}}  )}
+\item[\textbf{[27]}]{ \textbf{\textlangle{}Atom\textrangle{}}  $\rightarrow$ - \textbf{\textlangle{}Atom\textrangle{}} }
+\item[\textbf{[28]}]{ \textbf{\textlangle{}If\textrangle{}}  $\rightarrow$ IF ( \textbf{\textlangle{}Cond\textrangle{}}  ) THEN \textbf{[EndLine]} \textbf{\textlangle{}Code\textrangle{}}  \textbf{\textlangle{}IfSeq\textrangle{}} }
+\item[\textbf{[29]}]{ \textbf{\textlangle{}IfSeq\textrangle{}}  $\rightarrow$ ENDIF}
+\item[\textbf{[30]}]{ \textbf{\textlangle{}IfSeq\textrangle{}}  $\rightarrow$ ELSE \textbf{[EndLine]} \textbf{\textlangle{}Code\textrangle{}}  ENDIF}
+\item[\textbf{[31]}]{ \textbf{\textlangle{}Cond\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}AndCond\textrangle{}}  \textbf{\textlangle{}Cond\_prim\textrangle{}} }
+\item[\textbf{[32]}]{ \textbf{\textlangle{}Cond\_prim\textrangle{}}  $\rightarrow$ OR \textbf{\textlangle{}AndCond\textrangle{}}  \textbf{\textlangle{}Cond\_prim\textrangle{}} }
+\item[\textbf{[33]}]{ \textbf{\textlangle{}Cond\_prim\textrangle{}}  $\rightarrow \varepsilon$}
+\item[\textbf{[34]}]{ \textbf{\textlangle{}AndCond\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}SimpleCond\textrangle{}}  \textbf{\textlangle{}AndCond\_prim\textrangle{}} }
+\item[\textbf{[35]}]{ \textbf{\textlangle{}AndCond\_prim\textrangle{}}  $\rightarrow$ AND \textbf{\textlangle{}SimpleCond\textrangle{}}  \textbf{\textlangle{}AndCond\_prim\textrangle{}} }
+\item[\textbf{[36]}]{ \textbf{\textlangle{}AndCond\_prim\textrangle{}}  $\rightarrow \varepsilon$}
+\item[\textbf{[37]}]{ \textbf{\textlangle{}SimpleCond\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}ExprArith\textrangle{}}  \textbf{\textlangle{}Comp\textrangle{}}  \textbf{\textlangle{}ExprArith\textrangle{}} }
+\item[\textbf{[38]}]{ \textbf{\textlangle{}SimpleCond\textrangle{}}  $\rightarrow$ NOT \textbf{\textlangle{}SimpleCond\textrangle{}} }
+\item[\textbf{[39]}]{ \textbf{\textlangle{}Comp\textrangle{}}  $\rightarrow =$}
+\item[\textbf{[40]}]{ \textbf{\textlangle{}Comp\textrangle{}}  $\rightarrow <=$}
+\item[\textbf{[41]}]{ \textbf{\textlangle{}Comp\textrangle{}}  $\rightarrow <$}
+\item[\textbf{[42]}]{ \textbf{\textlangle{}Comp\textrangle{}}  $\rightarrow >=$}
+\item[\textbf{[43]}]{ \textbf{\textlangle{}Comp\textrangle{}}  $\rightarrow >$ }
+\item[\textbf{[44]}]{ \textbf{\textlangle{}Comp\textrangle{}}  $\rightarrow <>$ }
+\item[\textbf{[45]}]{ \textbf{\textlangle{}While\textrangle{}}  $\rightarrow$ WHILE ( \textbf{\textlangle{}Cond\textrangle{}}  ) DO \textbf{[EndLine]} \textbf{\textlangle{}Code\textrangle{}}  ENDWHILE}
+\item[\textbf{[46]}]{ \textbf{\textlangle{}For\textrangle{}}  $\rightarrow$ FOR \textbf{[VarName]} := \textbf{\textlangle{}ExprArith\textrangle{}}  TO \textbf{\textlangle{}ExprArith\textrangle{}}  DO \textbf{[EndLine]} \textbf{\textlangle{}Code\textrangle{}}  ENDFOR}
+\item[\textbf{[47]}]{ \textbf{\textlangle{}Print\textrangle{}}  $\rightarrow$ PRINT ( \textbf{\textlangle{}ExpList\textrangle{}}  )}
+\item[\textbf{[48]}]{ \textbf{\textlangle{}Read\textrangle{}}  $\rightarrow$ READ ( \textbf{\textlangle{}VarList\textrangle{}}  )}
+\item[\textbf{[49]}]{ \textbf{\textlangle{}ExpList\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}ExprArith\textrangle{}}  \textbf{\textlangle{}ExpList\_prim\textrangle{}} }
+\item[\textbf{[50]}]{ \textbf{\textlangle{}ExpList\_prim\textrangle{}}  $\rightarrow$ , \textbf{\textlangle{}ExprArith\textrangle{}}  \textbf{\textlangle{}ExpList\_prim\textrangle{}} }
+\item[\textbf{[51]}]{ \textbf{\textlangle{}ExpList\_prim\textrangle{}}  $\rightarrow \varepsilon$}
+
 \end{description}
 
 \section{Explanation of choices and hypotheses}
@@ -68,10 +118,16 @@ derivation tree than the \texttt{toString} method.
 \section{Tests files desciption}
 
 \begin{description}
-    \item[\texttt{01-Read.sf} and \texttt{00-Factorial.sf}] Those two files are provided by the teacher assistant.   
-    \item[\texttt{02-Factorial-nested-comment.sf}] This file contains nested comments to ensure that an error is raised.
-    \item[\texttt{03-Fibonacci.sf}] This file contains an implementation of Fibonacci number.
-    \item[\texttt{04-Factorial-unexpectedword.sf}] This file contains an upper case word that is not a keyword. An unexpected token will be raised on reading.
+    \item[\texttt{00-Factorial.sf}] This files is provided by the teacher assistant.
+    \item[\texttt{01-err-Print.sf}] On more file that contains an error
+    to show the error message.
+    \item[\texttt{02-err-Cond.sf}] 
+        This file contains an error where the condition is
+        just a number and not a comparison of two arithmetics expressions.
+        It shows an error that occur on a step (for the ll(1) parser)
+        where multiple terminal values are expected for the lookahead.
+    \item[\texttt{03-newlines.sf}] This file show how the parser
+        (and lexer) support an arbitrary number of empty lines or lines with only comments. 
 \end{description}
 
 \section{Action table}
