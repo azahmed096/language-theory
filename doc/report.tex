@@ -2,6 +2,8 @@
 \title{INFO-F-403: Project Super-Fortran Part 1 Lexer analyser}
 \author{Sefu Kevin and Abou Zaidi Ahmed}
 \usepackage{textcomp}
+\usepackage{graphicx}
+\usepackage{float}
 \begin{document}
 \maketitle
 \section{Introduction}
@@ -131,6 +133,29 @@ derivation tree than the \texttt{toString} method.
 \end{description}
 
 \section{Action table}
+See Annexe, figure~\ref{fig:table1} and figure~\ref{fig:table2}.
+\begin{figure}[!h]
+    \centering
+    \includegraphics[height = 20 cm]{actionTable1.JPG}
+    \caption{Action table 1}
+    \label{fig:table1}
+\end{figure}
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[height = 20 cm]{actionTable2.JPG}
+    \caption{Action table 2}
+    \label{fig:table2}
+\end{figure}
+
+\section {First and Follow}
+
+\begin{figure}[H]
+        \centering
+        \includegraphics[width = 15cm] {firstANDFollow.JPG}
+        \caption{First and Follow}
+        \label{plot92}
+\end{figure}
 
 
 \section{Conclusion}
@@ -147,4 +172,5 @@ because the grammar had many produces and terminals.
 But finally, this part of the project allowed us to learn more about the parsing step of a compiler 
 and to understand deeply how it works.
 
+\section{Annexe}
 \end{document}
