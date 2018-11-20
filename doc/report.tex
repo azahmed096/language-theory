@@ -4,11 +4,12 @@
 \usepackage{textcomp}
 \usepackage{graphicx}
 \usepackage{float}
+\usepackage{makecell}
 \begin{document}
 \maketitle
 \section{Introduction}
-In this project we were requested to design and write a compiler for Super-Fortran. It is a very simple 
-imperative language. The project is divided in 3 parts and for this second part we had to produce 
+In this project we were requested to design and write a compiler for Super-Fortran. It is a very simple
+imperative language. The project is divided in 3 parts and for this second part we had to produce
 the parser of the compiler. The parser is the tools that perform the syntax analysis of a sequences of tokens and verify if
 those tokens are conform to the rules of grammar. During the parsing, the parse had to build the derivation tree.
 
@@ -17,57 +18,57 @@ There exist severals methods of building a parser. In our case we choose to desi
 \section{Grammar}
 We did not find any useless rule. They all are accessible and productive.
 \begin{description}
-\item[\textbf{[1]}]{ \textbf{\textlangle{}Program\textrangle{}}  $\rightarrow$ BEGINPROG \textbf{[ProgName]} \textbf{[EndLine]} \textbf{\textlangle{}Variables\textrangle{}}  \textbf{\textlangle{}Code\textrangle{}}  ENDPROG}
-\item[\textbf{[2]}]{ \textbf{\textlangle{}Variables\textrangle{}}  $\rightarrow$ VARIABLES \textbf{\textlangle{}VarList\textrangle{}}  \textbf{[EndLine]}}
-\item[\textbf{[3]}]{ \textbf{\textlangle{}Variables\textrangle{}}  $\rightarrow \varepsilon$}
-\item[\textbf{[4]}]{ \textbf{\textlangle{}VarList\textrangle{}}  $\rightarrow$ \textbf{[VarName]} \textbf{\textlangle{}VarList\_prim\textrangle{}} }
-\item[\textbf{[5]}]{ \textbf{\textlangle{}VarList\_prim\textrangle{}}  $\rightarrow$ , \textbf{[VarName]} \textbf{\textlangle{}VarList\_prim\textrangle{}} }
-\item[\textbf{[6]}]{ \textbf{\textlangle{}VarList\_prim\textrangle{}}  $\rightarrow \varepsilon$}
-\item[\textbf{[7]}]{ \textbf{\textlangle{}Code\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}Instruction\textrangle{}}  \textbf{[EndLine]} \textbf{\textlangle{}Code\textrangle{}} }
-\item[\textbf{[8]}]{ \textbf{\textlangle{}Code\textrangle{}}  $\rightarrow \varepsilon$}
-\item[\textbf{[9]}]{ \textbf{\textlangle{}Instruction\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}Assign\textrangle{}} }
-\item[\textbf{[10]}]{ \textbf{\textlangle{}Instruction\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}If\textrangle{}} }
-\item[\textbf{[11]}]{ \textbf{\textlangle{}Instruction\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}While\textrangle{}} }
-\item[\textbf{[12]}]{ \textbf{\textlangle{}Instruction\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}For\textrangle{}} }
-\item[\textbf{[13]}]{ \textbf{\textlangle{}Instruction\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}Print\textrangle{}} }
-\item[\textbf{[14]}]{ \textbf{\textlangle{}Instruction\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}Read\textrangle{}} }
-\item[\textbf{[15]}]{ \textbf{\textlangle{}Assign\textrangle{}}  $\rightarrow$ \textbf{[VarName]} := \textbf{\textlangle{}ExprArith\textrangle{}} }
-\item[\textbf{[16]}]{ \textbf{\textlangle{}ExprArith\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}Term\textrangle{}}  \textbf{\textlangle{}ExprArith\_prim\textrangle{}} }
-\item[\textbf{[17]}]{ \textbf{\textlangle{}ExprArith\_prim\textrangle{}}  $\rightarrow$ + \textbf{\textlangle{}Term\textrangle{}}  \textbf{\textlangle{}ExprArith\_prim\textrangle{}} }
-\item[\textbf{[18]}]{ \textbf{\textlangle{}ExprArith\_prim\textrangle{}}  $\rightarrow$ - \textbf{\textlangle{}Term\textrangle{}}  \textbf{\textlangle{}ExprArith\_prim\textrangle{}} }
-\item[\textbf{[19]}]{ \textbf{\textlangle{}ExprArith\_prim\textrangle{}}  $\rightarrow \varepsilon$}
-\item[\textbf{[20]}]{ \textbf{\textlangle{}Term\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}Atom\textrangle{}}  \textbf{\textlangle{}Term\_prim\textrangle{}} }
-\item[\textbf{[21]}]{ \textbf{\textlangle{}Term\_prim\textrangle{}}  $\rightarrow$ * \textbf{\textlangle{}Atom\textrangle{}}  \textbf{\textlangle{}Term\_prim\textrangle{}} }
-\item[\textbf{[22]}]{ \textbf{\textlangle{}Term\_prim\textrangle{}}  $\rightarrow$ / \textbf{\textlangle{}Atom\textrangle{}}  \textbf{\textlangle{}Term\_prim\textrangle{}} }
-\item[\textbf{[23]}]{ \textbf{\textlangle{}Term\_prim\textrangle{}}  $\rightarrow \varepsilon$}
-\item[\textbf{[24]}]{ \textbf{\textlangle{}Atom\textrangle{}}  $\rightarrow$ \textbf{[Number]}}
-\item[\textbf{[25]}]{ \textbf{\textlangle{}Atom\textrangle{}}  $\rightarrow$ \textbf{[VarName]}}
-\item[\textbf{[26]}]{ \textbf{\textlangle{}Atom\textrangle{}}  $\rightarrow$ ( \textbf{\textlangle{}ExprArith\textrangle{}}  )}
-\item[\textbf{[27]}]{ \textbf{\textlangle{}Atom\textrangle{}}  $\rightarrow$ - \textbf{\textlangle{}Atom\textrangle{}} }
-\item[\textbf{[28]}]{ \textbf{\textlangle{}If\textrangle{}}  $\rightarrow$ IF ( \textbf{\textlangle{}Cond\textrangle{}}  ) THEN \textbf{[EndLine]} \textbf{\textlangle{}Code\textrangle{}}  \textbf{\textlangle{}IfSeq\textrangle{}} }
-\item[\textbf{[29]}]{ \textbf{\textlangle{}IfSeq\textrangle{}}  $\rightarrow$ ENDIF}
-\item[\textbf{[30]}]{ \textbf{\textlangle{}IfSeq\textrangle{}}  $\rightarrow$ ELSE \textbf{[EndLine]} \textbf{\textlangle{}Code\textrangle{}}  ENDIF}
-\item[\textbf{[31]}]{ \textbf{\textlangle{}Cond\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}AndCond\textrangle{}}  \textbf{\textlangle{}Cond\_prim\textrangle{}} }
-\item[\textbf{[32]}]{ \textbf{\textlangle{}Cond\_prim\textrangle{}}  $\rightarrow$ OR \textbf{\textlangle{}AndCond\textrangle{}}  \textbf{\textlangle{}Cond\_prim\textrangle{}} }
-\item[\textbf{[33]}]{ \textbf{\textlangle{}Cond\_prim\textrangle{}}  $\rightarrow \varepsilon$}
-\item[\textbf{[34]}]{ \textbf{\textlangle{}AndCond\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}SimpleCond\textrangle{}}  \textbf{\textlangle{}AndCond\_prim\textrangle{}} }
-\item[\textbf{[35]}]{ \textbf{\textlangle{}AndCond\_prim\textrangle{}}  $\rightarrow$ AND \textbf{\textlangle{}SimpleCond\textrangle{}}  \textbf{\textlangle{}AndCond\_prim\textrangle{}} }
-\item[\textbf{[36]}]{ \textbf{\textlangle{}AndCond\_prim\textrangle{}}  $\rightarrow \varepsilon$}
-\item[\textbf{[37]}]{ \textbf{\textlangle{}SimpleCond\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}ExprArith\textrangle{}}  \textbf{\textlangle{}Comp\textrangle{}}  \textbf{\textlangle{}ExprArith\textrangle{}} }
-\item[\textbf{[38]}]{ \textbf{\textlangle{}SimpleCond\textrangle{}}  $\rightarrow$ NOT \textbf{\textlangle{}SimpleCond\textrangle{}} }
-\item[\textbf{[39]}]{ \textbf{\textlangle{}Comp\textrangle{}}  $\rightarrow =$}
-\item[\textbf{[40]}]{ \textbf{\textlangle{}Comp\textrangle{}}  $\rightarrow <=$}
-\item[\textbf{[41]}]{ \textbf{\textlangle{}Comp\textrangle{}}  $\rightarrow <$}
-\item[\textbf{[42]}]{ \textbf{\textlangle{}Comp\textrangle{}}  $\rightarrow >=$}
-\item[\textbf{[43]}]{ \textbf{\textlangle{}Comp\textrangle{}}  $\rightarrow >$ }
-\item[\textbf{[44]}]{ \textbf{\textlangle{}Comp\textrangle{}}  $\rightarrow <>$ }
-\item[\textbf{[45]}]{ \textbf{\textlangle{}While\textrangle{}}  $\rightarrow$ WHILE ( \textbf{\textlangle{}Cond\textrangle{}}  ) DO \textbf{[EndLine]} \textbf{\textlangle{}Code\textrangle{}}  ENDWHILE}
-\item[\textbf{[46]}]{ \textbf{\textlangle{}For\textrangle{}}  $\rightarrow$ FOR \textbf{[VarName]} := \textbf{\textlangle{}ExprArith\textrangle{}}  TO \textbf{\textlangle{}ExprArith\textrangle{}}  DO \textbf{[EndLine]} \textbf{\textlangle{}Code\textrangle{}}  ENDFOR}
-\item[\textbf{[47]}]{ \textbf{\textlangle{}Print\textrangle{}}  $\rightarrow$ PRINT ( \textbf{\textlangle{}ExpList\textrangle{}}  )}
-\item[\textbf{[48]}]{ \textbf{\textlangle{}Read\textrangle{}}  $\rightarrow$ READ ( \textbf{\textlangle{}VarList\textrangle{}}  )}
-\item[\textbf{[49]}]{ \textbf{\textlangle{}ExpList\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}ExprArith\textrangle{}}  \textbf{\textlangle{}ExpList\_prim\textrangle{}} }
-\item[\textbf{[50]}]{ \textbf{\textlangle{}ExpList\_prim\textrangle{}}  $\rightarrow$ , \textbf{\textlangle{}ExprArith\textrangle{}}  \textbf{\textlangle{}ExpList\_prim\textrangle{}} }
-\item[\textbf{[51]}]{ \textbf{\textlangle{}ExpList\_prim\textrangle{}}  $\rightarrow \varepsilon$}
+	\item[\textbf{[1]}]{ \textbf{\textlangle{}Program\textrangle{}}  $\rightarrow$ BEGINPROG \textbf{[ProgName]} \textbf{[EndLine]} \textbf{\textlangle{}Variables\textrangle{}}  \textbf{\textlangle{}Code\textrangle{}}  ENDPROG}
+	\item[\textbf{[2]}]{ \textbf{\textlangle{}Variables\textrangle{}}  $\rightarrow$ VARIABLES \textbf{\textlangle{}VarList\textrangle{}}  \textbf{[EndLine]}}
+	\item[\textbf{[3]}]{ \textbf{\textlangle{}Variables\textrangle{}}  $\rightarrow \varepsilon$}
+	\item[\textbf{[4]}]{ \textbf{\textlangle{}VarList\textrangle{}}  $\rightarrow$ \textbf{[VarName]} \textbf{\textlangle{}VarList\_prim\textrangle{}} }
+	\item[\textbf{[5]}]{ \textbf{\textlangle{}VarList\_prim\textrangle{}}  $\rightarrow$ , \textbf{[VarName]} \textbf{\textlangle{}VarList\_prim\textrangle{}} }
+	\item[\textbf{[6]}]{ \textbf{\textlangle{}VarList\_prim\textrangle{}}  $\rightarrow \varepsilon$}
+	\item[\textbf{[7]}]{ \textbf{\textlangle{}Code\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}Instruction\textrangle{}}  \textbf{[EndLine]} \textbf{\textlangle{}Code\textrangle{}} }
+	\item[\textbf{[8]}]{ \textbf{\textlangle{}Code\textrangle{}}  $\rightarrow \varepsilon$}
+	\item[\textbf{[9]}]{ \textbf{\textlangle{}Instruction\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}Assign\textrangle{}} }
+	\item[\textbf{[10]}]{ \textbf{\textlangle{}Instruction\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}If\textrangle{}} }
+	\item[\textbf{[11]}]{ \textbf{\textlangle{}Instruction\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}While\textrangle{}} }
+	\item[\textbf{[12]}]{ \textbf{\textlangle{}Instruction\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}For\textrangle{}} }
+	\item[\textbf{[13]}]{ \textbf{\textlangle{}Instruction\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}Print\textrangle{}} }
+	\item[\textbf{[14]}]{ \textbf{\textlangle{}Instruction\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}Read\textrangle{}} }
+	\item[\textbf{[15]}]{ \textbf{\textlangle{}Assign\textrangle{}}  $\rightarrow$ \textbf{[VarName]} := \textbf{\textlangle{}ExprArith\textrangle{}} }
+	\item[\textbf{[16]}]{ \textbf{\textlangle{}ExprArith\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}Term\textrangle{}}  \textbf{\textlangle{}ExprArith\_prim\textrangle{}} }
+	\item[\textbf{[17]}]{ \textbf{\textlangle{}ExprArith\_prim\textrangle{}}  $\rightarrow$ + \textbf{\textlangle{}Term\textrangle{}}  \textbf{\textlangle{}ExprArith\_prim\textrangle{}} }
+	\item[\textbf{[18]}]{ \textbf{\textlangle{}ExprArith\_prim\textrangle{}}  $\rightarrow$ - \textbf{\textlangle{}Term\textrangle{}}  \textbf{\textlangle{}ExprArith\_prim\textrangle{}} }
+	\item[\textbf{[19]}]{ \textbf{\textlangle{}ExprArith\_prim\textrangle{}}  $\rightarrow \varepsilon$}
+	\item[\textbf{[20]}]{ \textbf{\textlangle{}Term\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}Atom\textrangle{}}  \textbf{\textlangle{}Term\_prim\textrangle{}} }
+	\item[\textbf{[21]}]{ \textbf{\textlangle{}Term\_prim\textrangle{}}  $\rightarrow$ * \textbf{\textlangle{}Atom\textrangle{}}  \textbf{\textlangle{}Term\_prim\textrangle{}} }
+	\item[\textbf{[22]}]{ \textbf{\textlangle{}Term\_prim\textrangle{}}  $\rightarrow$ / \textbf{\textlangle{}Atom\textrangle{}}  \textbf{\textlangle{}Term\_prim\textrangle{}} }
+	\item[\textbf{[23]}]{ \textbf{\textlangle{}Term\_prim\textrangle{}}  $\rightarrow \varepsilon$}
+	\item[\textbf{[24]}]{ \textbf{\textlangle{}Atom\textrangle{}}  $\rightarrow$ \textbf{[Number]}}
+	\item[\textbf{[25]}]{ \textbf{\textlangle{}Atom\textrangle{}}  $\rightarrow$ \textbf{[VarName]}}
+	\item[\textbf{[26]}]{ \textbf{\textlangle{}Atom\textrangle{}}  $\rightarrow$ ( \textbf{\textlangle{}ExprArith\textrangle{}}  )}
+	\item[\textbf{[27]}]{ \textbf{\textlangle{}Atom\textrangle{}}  $\rightarrow$ - \textbf{\textlangle{}Atom\textrangle{}} }
+	\item[\textbf{[28]}]{ \textbf{\textlangle{}If\textrangle{}}  $\rightarrow$ IF ( \textbf{\textlangle{}Cond\textrangle{}}  ) THEN \textbf{[EndLine]} \textbf{\textlangle{}Code\textrangle{}}  \textbf{\textlangle{}IfSeq\textrangle{}} }
+	\item[\textbf{[29]}]{ \textbf{\textlangle{}IfSeq\textrangle{}}  $\rightarrow$ ENDIF}
+	\item[\textbf{[30]}]{ \textbf{\textlangle{}IfSeq\textrangle{}}  $\rightarrow$ ELSE \textbf{[EndLine]} \textbf{\textlangle{}Code\textrangle{}}  ENDIF}
+	\item[\textbf{[31]}]{ \textbf{\textlangle{}Cond\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}AndCond\textrangle{}}  \textbf{\textlangle{}Cond\_prim\textrangle{}} }
+	\item[\textbf{[32]}]{ \textbf{\textlangle{}Cond\_prim\textrangle{}}  $\rightarrow$ OR \textbf{\textlangle{}AndCond\textrangle{}}  \textbf{\textlangle{}Cond\_prim\textrangle{}} }
+	\item[\textbf{[33]}]{ \textbf{\textlangle{}Cond\_prim\textrangle{}}  $\rightarrow \varepsilon$}
+	\item[\textbf{[34]}]{ \textbf{\textlangle{}AndCond\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}SimpleCond\textrangle{}}  \textbf{\textlangle{}AndCond\_prim\textrangle{}} }
+	\item[\textbf{[35]}]{ \textbf{\textlangle{}AndCond\_prim\textrangle{}}  $\rightarrow$ AND \textbf{\textlangle{}SimpleCond\textrangle{}}  \textbf{\textlangle{}AndCond\_prim\textrangle{}} }
+	\item[\textbf{[36]}]{ \textbf{\textlangle{}AndCond\_prim\textrangle{}}  $\rightarrow \varepsilon$}
+	\item[\textbf{[37]}]{ \textbf{\textlangle{}SimpleCond\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}ExprArith\textrangle{}}  \textbf{\textlangle{}Comp\textrangle{}}  \textbf{\textlangle{}ExprArith\textrangle{}} }
+	\item[\textbf{[38]}]{ \textbf{\textlangle{}SimpleCond\textrangle{}}  $\rightarrow$ NOT \textbf{\textlangle{}SimpleCond\textrangle{}} }
+	\item[\textbf{[39]}]{ \textbf{\textlangle{}Comp\textrangle{}}  $\rightarrow =$}
+	\item[\textbf{[40]}]{ \textbf{\textlangle{}Comp\textrangle{}}  $\rightarrow <=$}
+	\item[\textbf{[41]}]{ \textbf{\textlangle{}Comp\textrangle{}}  $\rightarrow <$}
+	\item[\textbf{[42]}]{ \textbf{\textlangle{}Comp\textrangle{}}  $\rightarrow >=$}
+	\item[\textbf{[43]}]{ \textbf{\textlangle{}Comp\textrangle{}}  $\rightarrow >$ }
+	\item[\textbf{[44]}]{ \textbf{\textlangle{}Comp\textrangle{}}  $\rightarrow <>$ }
+	\item[\textbf{[45]}]{ \textbf{\textlangle{}While\textrangle{}}  $\rightarrow$ WHILE ( \textbf{\textlangle{}Cond\textrangle{}}  ) DO \textbf{[EndLine]} \textbf{\textlangle{}Code\textrangle{}}  ENDWHILE}
+	\item[\textbf{[46]}]{ \textbf{\textlangle{}For\textrangle{}}  $\rightarrow$ FOR \textbf{[VarName]} := \textbf{\textlangle{}ExprArith\textrangle{}}  TO \textbf{\textlangle{}ExprArith\textrangle{}}  DO \textbf{[EndLine]} \textbf{\textlangle{}Code\textrangle{}}  ENDFOR}
+	\item[\textbf{[47]}]{ \textbf{\textlangle{}Print\textrangle{}}  $\rightarrow$ PRINT ( \textbf{\textlangle{}ExpList\textrangle{}}  )}
+	\item[\textbf{[48]}]{ \textbf{\textlangle{}Read\textrangle{}}  $\rightarrow$ READ ( \textbf{\textlangle{}VarList\textrangle{}}  )}
+	\item[\textbf{[49]}]{ \textbf{\textlangle{}ExpList\textrangle{}}  $\rightarrow$ \textbf{\textlangle{}ExprArith\textrangle{}}  \textbf{\textlangle{}ExpList\_prim\textrangle{}} }
+	\item[\textbf{[50]}]{ \textbf{\textlangle{}ExpList\_prim\textrangle{}}  $\rightarrow$ , \textbf{\textlangle{}ExprArith\textrangle{}}  \textbf{\textlangle{}ExpList\_prim\textrangle{}} }
+	\item[\textbf{[51]}]{ \textbf{\textlangle{}ExpList\_prim\textrangle{}}  $\rightarrow \varepsilon$}
 
 \end{description}
 
@@ -75,12 +76,12 @@ We did not find any useless rule. They all are accessible and productive.
 
 \subsection{Recursive descent}
 We choose to build a recursive descent parser because we found it to be more intuitive in the sense
-that the derivation tree correspond directly (except for epsilon)to the recursive calls and we also 
+that the derivation tree correspond directly (except for epsilon) to the recursive calls and we also
 found this method interesting in the sense that it offer easy debugging.
 
 \subsubsection{Errors handling}
-In our recursive decent parsing, when we expect a specific terminal from the input but 
-we receive a different one we throw a syntax error, that tells to the user which terminal was expected.  
+In our recursive decent parsing, when we expect a specific terminal from the input but
+we receive a different one we throw a syntax error, that tells to the user which terminal was expected.
 
 \subsection{Arbitrary number of endlines handling}
 The grammar does not allow to have mutliples endlines betweens instructions. But we supposed that
@@ -101,7 +102,7 @@ All endlines after the (first occurence) ENDPROG token are ignored.
 All others consecutives endlines are considered as a one endline token.
 
 \subsection{Endlines after short comments}
-In order to have the same output as the one in provided the .out file, the part 1 lexer 
+In order to have the same output as the one in provided the .out file, the part 1 lexer
 skips enldine after short comments. But this forces the user to put an additional empty line after
 each short comments. We changed the behaviour of the lexer.
 
@@ -113,49 +114,271 @@ We decided to add a LexicalUnit instance called \texttt{EPSILON} for the $ \vare
 a method named \texttt{getVerbose} to print more readable errors.
 
 \paragraph{ParseTree}
-We added a method called \texttt{labelToTex} that gives better formatting for terminals in the 
+We added a method called \texttt{labelToTex} that gives better formatting for terminals in the
 derivation tree than the \texttt{toString} method.
 
 
 \section{Tests files desciption}
+To execute the parser you need to use this command \texttt{-jar part2.jar [-v] [-wt <latexFile>] <superFortranFile>}
+
+The option \texttt{-v} is for a more verbose output.
+
+The order of all arguments should be the same.
 
 \begin{description}
-    \item[\texttt{00-Factorial.sf}] This files is provided by the teacher assistant.
-    \item[\texttt{01-err-Print.sf}] On more file that contains an error
-    to show the error message.
-    \item[\texttt{02-err-Cond.sf}] 
-        This file contains an error where the condition is
-        just a number and not a comparison of two arithmetics expressions.
-        It shows an error that occur on a step (for the ll(1) parser)
-        where multiple terminal values are expected for the lookahead.
-    \item[\texttt{03-newlines.sf}] This file show how the parser
-        (and lexer) support an arbitrary number of empty lines or lines with only comments. 
+	\item[\texttt{00-Factorial.sf}] This files is provided by the teacher assistant.
+	\item[\texttt{01-err-Print.sf}] On more file that contains an error
+	      to show the error message.
+	\item[\texttt{02-err-Cond.sf}]
+	      This file contains an error where the condition is
+	      just a number and not a comparison of two arithmetics expressions.
+	      It shows an error that occur on a step (for the ll(1) parser)
+	      where multiple terminal values are expected for the lookahead.
+	\item[\texttt{03-newlines.sf}] This file show how the parser
+	      (and lexer) support an arbitrary number of empty lines or lines with only comments.
 \end{description}
 
+
+\section{Firsts and Follows}
+\begin{table}[H]
+	\begin{tabular}{|l|l|}
+		\hline
+		x                                        & First                                                                           \\ \hline
+		\textless{}Program\textgreater{}         & BEGINPROG                                                                       \\ \hline
+		\textless{}Variables\textgreater{}       & VARIABLES    Epsilon                                                            \\ \hline
+		\textless{}VarList\textgreater{}         & {[}VarName{]}                                                                   \\ \hline
+		\textless{}VarList\_prim\textgreater{}   & , epsilon                                                                       \\ \hline
+		\textless{}Code\textgreater{}            & {[}VarName{]} IF WHILE FOR PRINT READ epsilon                                   \\ \hline
+		\textless{}Instruction\textgreater{}     & {[}VarName{]} IF WHILE FOR PRINT READ                                           \\ \hline
+		\textless{}Assign\textgreater{}          & {[}VarName{]}                                                                   \\ \hline
+		\textless{}ExprArith\textgreater{}       & {[}Number{]} {[}VarName{]} ( -                                                  \\ \hline
+		\textless{}ExprArith\_prim\textgreater{} & + - epsilon                                                                     \\ \hline
+		\textless{}Term\textgreater{}            & {[}Number{]} {[}VarName{]} ( -                                                  \\ \hline
+		\textless{}Term\_prim\textgreater{}      & * / epsilon                                                                     \\ \hline
+		\textless{}Atom\textgreater{}            & {[}Number{]} {[}VarName{]} ( -                                                  \\ \hline
+		\textless{}If\textgreater{}              & IF                                                                              \\ \hline
+		\textless{}IfSeq\textgreater{}           & ENDIF ELSE                                                                      \\ \hline
+		\textless{}Cond\textgreater{}            & {[}Number{]} {[}VarName{]} ( - NOT                                              \\ \hline
+		\textless{}Cond\_prim\textgreater{}      & OR epsilon                                                                      \\ \hline
+		\textless{}AndCond\textgreater{}         & {[}Number{]} {[}VarName{]} ( - NOT                                              \\ \hline
+		\textless{}AndCond\_prim\textgreater{}   & AND epsilon                                                                     \\ \hline
+		\textless{}SimpleCond\textgreater{}      & {[}Number{]} {[}VarName{]} ( - NOT                                              \\ \hline
+		\textless{}Comp\textgreater{}            & = \textgreater{}= \textgreater \textless{}= \textless \textless{}\textgreater{} \\ \hline
+		\textless{}While\textgreater{}           & WHILE                                                                           \\ \hline
+		\textless{}For\textgreater{}             & FOR                                                                             \\ \hline
+		\textless{}Print\textgreater{}           & PRINT                                                                           \\ \hline
+		\textless{}Read\textgreater{}            & READ                                                                            \\ \hline
+		\textless{}ExpList\textgreater{}         & {[}Number{]} {[}VarName{]} ( -                                                  \\ \hline
+		\textless{}ExpList\_prim\textgreater{}   & , epsilon                                                                       \\ \hline
+	\end{tabular}
+\end{table}
+
+\begin{table}[H]
+	\begin{tabular}{|l|l|}
+		\hline
+		x                                        & Follow                                                                                                         \\ \hline
+		\textless{}Program\textgreater{}         &                                                                                                                \\ \hline
+		\textless{}Variables\textgreater{}       & \makecell{{[}VarName{]} IF WHILE FOR PRINT READ  ENDPROG  ENDIF ELSE                                           \\ ENDWHILE ENDFOR}                                     \\ \hline
+		\textless{}VarList\textgreater{}         & {[}EndLine{]} )                                                                                                \\ \hline
+		\textless{}VarList\_prim\textgreater{}   & {[}EndLine{]} )                                                                                                \\ \hline
+		\textless{}Code\textgreater{}            & ENDPROG ENDIF ENDWHILE ENDFOR ELSE                                                                             \\ \hline
+		\textless{}Instruction\textgreater{}     & {[}EndLine{]}                                                                                                  \\ \hline
+		\textless{}Assign\textgreater{}          & {[}EndLine{]}                                                                                                  \\ \hline
+		\textless{}ExprArith\textgreater{}       & {[}EndLine{]} ) \textless \textgreater{}= \textgreater \textless{}= \textless{}\textgreater TO DO , AND OR     \\ \hline
+		\textless{}ExprArith\_prim\textgreater{} & {[}EndLine{]} ) \textless \textgreater{}= \textgreater \textless{}= \textless{}\textgreater TO DO , AND OR     \\ \hline
+		\textless{}Term\textgreater{}            & + - {[}EndLine{]} ) \textless \textgreater{}= \textgreater \textless{}= \textless{}\textgreater TO DO , AND OR \\ \hline
+		\textless{}Term\_prim\textgreater{}      & + - {[}EndLine{]} ) \textless \textgreater{}= \textgreater \textless{}= \textless{}\textgreater TO DO , AND OR \\ \hline
+		\textless{}Atom\textgreater{}            & * / {[}EndLine{]} ) \textless \textgreater{}= \textgreater \textless{}= \textless{}\textgreater TO DO , AND OR \\ \hline
+		\textless{}If\textgreater{}              & {[}EndLine{]}                                                                                                  \\ \hline
+		\textless{}IfSeq\textgreater{}           & {[}EndLine{]}                                                                                                  \\ \hline
+		\textless{}Cond\textgreater{}            & )                                                                                                              \\ \hline
+		\textless{}Cond\_prim\textgreater{}      & )                                                                                                              \\ \hline
+		\textless{}AndCond\textgreater{}         & OR )                                                                                                           \\ \hline
+		\textless{}AndCond\_prim\textgreater{}   & OR )                                                                                                           \\ \hline
+		\textless{}SimpleCond\textgreater{}      & AND OR )                                                                                                       \\ \hline
+		\textless{}Comp\textgreater{}            & {[}Number{]} {[}VarName{]} ( -                                                                                 \\ \hline
+		\textless{}While\textgreater{}           & {[}EndLine{]}                                                                                                  \\ \hline
+		\textless{}For\textgreater{}             & {[}EndLine{]}                                                                                                  \\ \hline
+		\textless{}Print\textgreater{}           & {[}EndLine{]}                                                                                                  \\ \hline
+		\textless{}Read\textgreater{}            & {[}EndLine{]}                                                                                                  \\ \hline
+		\textless{}ExpList\textgreater{}         & )                                                                                                              \\ \hline
+		\textless{}ExpList\_prim\textgreater{}   & )                                                                                                              \\ \hline
+	\end{tabular}
+\end{table}
 \section{Action table}
-See Annexe, figure~\ref{fig:table1} and figure~\ref{fig:table2}.
-\begin{figure}[!h]
-    \centering
-    \includegraphics[height = 20 cm]{actionTable1.JPG}
-    \caption{Action table 1}
-    \label{fig:table1}
-\end{figure}
 
-\begin{figure}[!h]
-    \centering
-    \includegraphics[height = 20 cm]{actionTable2.JPG}
-    \caption{Action table 2}
-    \label{fig:table2}
-\end{figure}
+\begin{table}[H]
+	\begin{tabular}{|l|l|l|l|l|}
+		\hline
+		X                                        & {[}ProgName{]} & {[}Number{]} & {[}EndLine{]} & {[}VarName{]} \\ \hline
+		\textless{}Program\textgreater{}         &                &              &               &               \\ \hline
+		\textless{}Variables\textgreater{}       &                &              &               & P3            \\ \hline
+		\textless{}VarList\textgreater{}         &                &              &               & P4            \\ \hline
+		\textless{}VarList\_prim\textgreater{}   &                &              & P6            &               \\ \hline
+		\textless{}Code\textgreater{}            &                &              &               & P7            \\ \hline
+		\textless{}Instruction\textgreater{}     &                &              &               & P9            \\ \hline
+		\textless{}Assign\textgreater{}          &                &              &               & P15           \\ \hline
+		\textless{}ExprArith\textgreater{}       &                & P16          &               & P16           \\ \hline
+		\textless{}ExprArith\_prim\textgreater{} &                &              & P19           &               \\ \hline
+		\textless{}Term\textgreater{}            &                & P20          &               & P20           \\ \hline
+		\textless{}Term\_prim\textgreater{}      &                &              &               &               \\ \hline
+		\textless{}Atom\textgreater{}            &                & P24          &               & P25           \\ \hline
+		\textless{}If\textgreater{}              &                &              &               &               \\ \hline
+		\textless{}IfSeq\textgreater{}           &                &              &               &               \\ \hline
+		\textless{}Cond\textgreater{}            &                & P31          &               & P31           \\ \hline
+		\textless{}Cond\_prim\textgreater{}      &                &              &               &               \\ \hline
+		\textless{}AndCond\textgreater{}         &                & P34          &               & P34           \\ \hline
+		\textless{}AndCond\_prim\textgreater{}   &                &              &               &               \\ \hline
+		\textless{}SimpleCond\textgreater{}      &                & P37          &               & P37           \\ \hline
+		\textless{}Comp\textgreater{}            &                &              &               &               \\ \hline
+		\textless{}While\textgreater{}           &                &              &               &               \\ \hline
+		\textless{}For\textgreater{}             &                &              &               &               \\ \hline
+		\textless{}Print\textgreater{}           &                &              &               &               \\ \hline
+		\textless{}Read\textgreater{}            &                &              &               &               \\ \hline
+		\textless{}ExpList\textgreater{}         &                & P49          &               & P49           \\ \hline
+		\textless{}ExpList\_prim\textgreater{}   &                &              &               &               \\ \hline
+	\end{tabular}
+\end{table}
 
-\section {First and Follow}
 
-\begin{figure}[H]
-        \centering
-        \includegraphics[width = 15cm] {firstANDFollow.JPG}
-        \caption{First and Follow}
-        \label{plot92}
-\end{figure}
+\begin{table}[H]
+	\begin{tabular}{|l|l|l|l|l|l|l|l|l|l|l|l|l|}
+		\hline
+		X                                        & \textgreater{} & \textless{}= & \textless{} & \textless{}\textgreater{} & := & (   & )   & +   & -   & =   & \textgreater{}= & *   \\ \hline
+		\textless{}Program\textgreater{}         &                &              &             &                           &    &     &     &     &     &     &                 &     \\ \hline
+		\textless{}Variables\textgreater{}       &                &              &             &                           &    &     &     &     &     &     &                 &     \\ \hline
+		\textless{}VarList\textgreater{}         &                &              &             &                           &    &     &     &     &     &     &                 &     \\ \hline
+		\textless{}VarList\_prim\textgreater{}   &                &              &             &                           &    &     & P6  &     &     &     &                 &     \\ \hline
+		\textless{}Code\textgreater{}            &                &              &             &                           &    &     &     &     &     &     &                 &     \\ \hline
+		\textless{}Instruction\textgreater{}     &                &              &             &                           &    &     &     &     &     &     &                 &     \\ \hline
+		\textless{}Assign\textgreater{}          &                &              &             &                           &    &     &     &     &     &     &                 &     \\ \hline
+		\textless{}ExprArith\textgreater{}       &                &              &             &                           &    & P16 &     &     & P16 &     &                 &     \\ \hline
+		\textless{}ExprArith\_prim\textgreater{} & P19            & P19          & P19         & P19                       &    &     & P19 & P17 & P18 & P19 & P19             &     \\ \hline
+		\textless{}Term\textgreater{}            &                &              &             &                           &    & P20 &     &     & P20 &     &                 &     \\ \hline
+		\textless{}Term\_prim\textgreater{}      & P23            & P23          & P23         & P23                       &    &     & P23 & P23 & P23 & P23 & P23             & P21 \\ \hline
+		\textless{}Atom\textgreater{}            &                &              &             &                           &    & P26 &     &     & P27 &     &                 &     \\ \hline
+		\textless{}If\textgreater{}              &                &              &             &                           &    &     &     &     &     &     &                 &     \\ \hline
+		\textless{}IfSeq\textgreater{}           &                &              &             &                           &    &     &     &     &     &     &                 &     \\ \hline
+		\textless{}Cond\textgreater{}            &                &              &             &                           &    & P31 &     &     & P31 &     &                 &     \\ \hline
+		\textless{}Cond\_prim\textgreater{}      &                &              &             &                           &    &     & P33 &     &     &     &                 &     \\ \hline
+		\textless{}AndCond\textgreater{}         &                &              &             &                           &    & P34 &     &     & P34 &     &                 &     \\ \hline
+		\textless{}AndCond\_prim\textgreater{}   &                &              &             &                           &    &     & P36 &     &     &     &                 &     \\ \hline
+		\textless{}SimpleCond\textgreater{}      &                &              &             &                           &    & P37 &     &     & P37 &     &                 &     \\ \hline
+		\textless{}Comp\textgreater{}            & P41            & P42          & P43         & P44                       &    &     &     &     &     & P39 & P40             &     \\ \hline
+		\textless{}While\textgreater{}           &                &              &             &                           &    &     &     &     &     &     &                 &     \\ \hline
+		\textless{}For\textgreater{}             &                &              &             &                           &    &     &     &     &     &     &                 &     \\ \hline
+		\textless{}Print\textgreater{}           &                &              &             &                           &    &     &     &     &     &     &                 &     \\ \hline
+		\textless{}Read\textgreater{}            &                &              &             &                           &    &     &     &     &     &     &                 &     \\ \hline
+		\textless{}ExpList\textgreater{}         &                &              &             &                           &    & P49 &     &     & P49 &     &                 &     \\ \hline
+		\textless{}ExpList\_prim\textgreater{}   &                &              &             &                           &    &     & P51 &     &     &     &                 &     \\ \hline
+	\end{tabular}
+\end{table}
+
+
+
+
+\begin{table}[H]
+	\begin{tabular}{|l|l|l|l|l|l|l|l|l|l|}
+		\hline
+		X                                        & /   & ,   & IF  & THEN & ENDIF & ELSE & OR  & AND & NOT \\ \hline
+		\textless{}Program\textgreater{}         &     &     &     &      &       &      &     &     &     \\ \hline
+		\textless{}Variables\textgreater{}       &     &     & P3  &      & P3    & P3   &     &     &     \\ \hline
+		\textless{}VarList\textgreater{}         &     &     &     &      &       &      &     &     &     \\ \hline
+		\textless{}VarList\_prim\textgreater{}   &     & P5  &     &      &       &      &     &     &     \\ \hline
+		\textless{}Code\textgreater{}            &     &     & P7  &      & P8    & P8   &     &     &     \\ \hline
+		\textless{}Instruction\textgreater{}     &     &     & P10 &      &       &      &     &     &     \\ \hline
+		\textless{}Assign\textgreater{}          &     &     &     &      &       &      &     &     &     \\ \hline
+		\textless{}ExprArith\textgreater{}       &     &     &     &      &       &      &     &     &     \\ \hline
+		\textless{}ExprArith\_prim\textgreater{} &     &     &     &      &       &      & P19 & P19 &     \\ \hline
+		\textless{}Term\textgreater{}            &     &     &     &      &       &      &     &     &     \\ \hline
+		\textless{}Term\_prim\textgreater{}      & P22 &     &     &      &       &      & P23 & P23 &     \\ \hline
+		\textless{}Atom\textgreater{}            &     &     &     &      &       &      &     &     &     \\ \hline
+		\textless{}If\textgreater{}              &     &     & P28 &      &       &      &     &     &     \\ \hline
+		\textless{}IfSeq\textgreater{}           &     &     &     &      & P29   & P30  &     &     &     \\ \hline
+		\textless{}Cond\textgreater{}            &     &     &     &      &       &      &     &     & P31 \\ \hline
+		\textless{}Cond\_prim\textgreater{}      &     &     &     &      &       &      & P32 &     &     \\ \hline
+		\textless{}AndCond\textgreater{}         &     &     &     &      &       &      &     &     & P34 \\ \hline
+		\textless{}AndCond\_prim\textgreater{}   &     &     &     &      &       &      & P36 & P35 &     \\ \hline
+		\textless{}SimpleCond\textgreater{}      &     &     &     &      &       &      &     &     & P38 \\ \hline
+		\textless{}Comp\textgreater{}            &     &     &     &      &       &      &     &     &     \\ \hline
+		\textless{}While\textgreater{}           &     &     &     &      &       &      &     &     &     \\ \hline
+		\textless{}For\textgreater{}             &     &     &     &      &       &      &     &     &     \\ \hline
+		\textless{}Print\textgreater{}           &     &     &     &      &       &      &     &     &     \\ \hline
+		\textless{}Read\textgreater{}            &     &     &     &      &       &      &     &     &     \\ \hline
+		\textless{}ExpList\textgreater{}         &     &     &     &      &       &      &     &     &     \\ \hline
+		\textless{}ExpList\_prim\textgreater{}   &     & P50 &     &      &       &      &     &     &     \\ \hline
+	\end{tabular}
+\end{table}
+
+
+
+
+\begin{table}[H]
+	\begin{tabular}{|l|l|l|l|l|l|l|l|l|l|l|}
+		\hline
+		X                                        & WHILE & DO  & ENDWHILE & FOR & TO  & PRINT & ENDFOR & READ \\ \hline
+		\textless{}Program\textgreater{}         &       &     &          &     &     &       &        &      \\ \hline
+		\textless{}Variables\textgreater{}       & P3    &     & P3       & P3  &     & P3    & P3     & P3   \\ \hline
+		\textless{}VarList\textgreater{}         &       &     &          &     &     &       &        &      \\ \hline
+		\textless{}VarList\_prim\textgreater{}   &       &     &          &     &     &       &        &      \\ \hline
+		\textless{}Code\textgreater{}            & P7    &     & P8       & P7  &     & P7    & P8     & P7   \\ \hline
+		\textless{}Instruction\textgreater{}     & P11   &     &          & P12 &     & P13   &        & P14  \\ \hline
+		\textless{}Assign\textgreater{}          &       &     &          &     &     &       &        &      \\ \hline
+		\textless{}ExprArith\textgreater{}       &       &     &          &     &     &       &        &      \\ \hline
+		\textless{}ExprArith\_prim\textgreater{} &       &     &          &     &     &       &        &      \\ \hline
+		\textless{}Term\textgreater{}            &       &     &          &     &     &       &        &      \\ \hline
+		\textless{}Term\_prim\textgreater{}      &       & P23 &          &     & P23 &       &        &      \\ \hline
+		\textless{}Atom\textgreater{}            &       &     &          &     &     &       &        &      \\ \hline
+		\textless{}If\textgreater{}              &       &     &          &     &     &       &        &      \\ \hline
+		\textless{}IfSeq\textgreater{}           &       &     &          &     &     &       &        &      \\ \hline
+		\textless{}Cond\textgreater{}            &       &     &          &     &     &       &        &      \\ \hline
+		\textless{}Cond\_prim\textgreater{}      &       &     &          &     &     &       &        &      \\ \hline
+		\textless{}AndCond\textgreater{}         &       &     &          &     &     &       &        &      \\ \hline
+		\textless{}AndCond\_prim\textgreater{}   &       &     &          &     &     &       &        &      \\ \hline
+		\textless{}SimpleCond\textgreater{}      &       &     &          &     &     &       &        &      \\ \hline
+		\textless{}Comp\textgreater{}            &       &     &          &     &     &       &        &      \\ \hline
+		\textless{}While\textgreater{}           & P45   &     &          &     &     &       &        &      \\ \hline
+		\textless{}For\textgreater{}             &       &     &          & P46 &     &       &        &      \\ \hline
+		\textless{}Print\textgreater{}           &       &     &          &     &     & P47   &        &      \\ \hline
+		\textless{}Read\textgreater{}            &       &     &          &     &     &       &        & P48  \\ \hline
+		\textless{}ExpList\textgreater{}         &       &     &          &     &     &       &        &      \\ \hline
+		\textless{}ExpList\_prim\textgreater{}   &       &     &          &     &     &       &        &      \\ \hline
+	\end{tabular}
+\end{table}
+
+
+\begin{table}[H]
+	\begin{tabular}{|l|l|l|l|}
+		\hline
+		X                                        & BEGINPROG & VARIABLES & ENDPROG \\ \hline
+		\textless{}Program\textgreater{}         & P1        &           &         \\ \hline
+		\textless{}Variables\textgreater{}       &           & P2        & P3      \\ \hline
+		\textless{}VarList\textgreater{}         &           &           &         \\ \hline
+		\textless{}VarList\_prim\textgreater{}   &           &           &         \\ \hline
+		\textless{}Code\textgreater{}            &           &           & P8      \\ \hline
+		\textless{}Instruction\textgreater{}     &           &           &         \\ \hline
+		\textless{}Assign\textgreater{}          &           &           &         \\ \hline
+		\textless{}ExprArith\textgreater{}       &           &           &         \\ \hline
+		\textless{}ExprArith\_prim\textgreater{} &           &           &         \\ \hline
+		\textless{}Term\textgreater{}            &           &           &         \\ \hline
+		\textless{}Term\_prim\textgreater{}      &           &           &         \\ \hline
+		\textless{}Atom\textgreater{}            &           &           &         \\ \hline
+		\textless{}If\textgreater{}              &           &           &         \\ \hline
+		\textless{}IfSeq\textgreater{}           &           &           &         \\ \hline
+		\textless{}Cond\textgreater{}            &           &           &         \\ \hline
+		\textless{}Cond\_prim\textgreater{}      &           &           &         \\ \hline
+		\textless{}AndCond\textgreater{}         &           &           &         \\ \hline
+		\textless{}AndCond\_prim\textgreater{}   &           &           &         \\ \hline
+		\textless{}SimpleCond\textgreater{}      &           &           &         \\ \hline
+		\textless{}Comp\textgreater{}            &           &           &         \\ \hline
+		\textless{}While\textgreater{}           &           &           &         \\ \hline
+		\textless{}For\textgreater{}             &           &           &         \\ \hline
+		\textless{}Print\textgreater{}           &           &           &         \\ \hline
+		\textless{}Read\textgreater{}            &           &           &         \\ \hline
+		\textless{}ExpList\textgreater{}         &           &           &         \\ \hline
+		\textless{}ExpList\_prim\textgreater{}   &           &           &         \\ \hline
+	\end{tabular}
+\end{table}
 
 
 \section{Conclusion}
@@ -169,8 +392,7 @@ and to check if our transformation of the grammar was good.
 A second difficulty was the verification of the firsts and follows because its easy to make mistakes
 because the grammar had many produces and terminals.
 
-But finally, this part of the project allowed us to learn more about the parsing step of a compiler 
+But finally, this part of the project allowed us to learn more about the parsing step of a compiler
 and to understand deeply how it works.
 
-\section{Annexe}
 \end{document}

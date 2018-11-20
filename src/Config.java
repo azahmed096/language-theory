@@ -6,6 +6,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.Reader;
 
+/**
+ * Parse commandline arguments
+ */
 public class Config {
     private OutputStreamWriter texWriter;
     private String error;
@@ -30,14 +33,25 @@ public class Config {
         }
     }
 
+    /**
+     * 
+     * @return True if the user specified a latex file with -wt
+     */
     public boolean hasTexFile() {
         return texWriter != null;
     }
 
+    /** 
+     * @return The reader for the fortran file to parse
+     */
     public Reader getFortranReader() {
         return this.reader;
     }
 
+    /**
+     * Open the file in read mode and prepare the attribute reader
+     * @param filename filename of the fortran file
+     */
     private void prepareFortranReader(String filename) {
         try {
             FileInputStream stream = new FileInputStream(filename);
@@ -49,6 +63,10 @@ public class Config {
         }
     }
 
+    /**
+     * Open the file in read mode and prepare the attribute texWriter
+     * @param filename filename of the latex file
+     */
     private void prepareOutputStream(String filename) {
         try{
             texWriter = new OutputStreamWriter(new FileOutputStream(filename), "UTF-8");
@@ -57,18 +75,34 @@ public class Config {
         }
     }
 
+    /**
+     * 
+     * @return the output stream writer to the latex file
+     */
     public OutputStreamWriter getTexStream() {
         return this.texWriter;
     }
 
+    /**
+     * Check if the argument list are correct
+     * @return True if it is correct
+     */
     public Boolean isCorrect() {
         return this.error == null;
     }
 
+    /**
+     * 
+     * @return String of error null if there is no error
+     */
     public String getError() {
         return this.error;
     }
 
+    /**
+     * The verbose output is specified by -wt
+     * @return True if the user asked for verbose ouput
+     */
     public boolean isVerbose() {
         return this.verbose;
     }
