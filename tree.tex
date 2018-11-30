@@ -1,0 +1,167 @@
+\RequirePackage{luatex85}
+\documentclass{standalone}
+
+\usepackage{tikz}
+
+\usetikzlibrary{graphdrawing, graphdrawing.trees}
+
+\begin{document}
+
+\begin{tikzpicture}[tree layout]
+\node {$1<Program>$}
+child { node {\textbf{BEGINPROG} \textit{BEGINPROG}}
+ }
+child { node {\textbf{PROGNAME} \textit{Factorial}}
+ }
+child { node {\textbf{ENDLINE} \textit{
+}}
+ }
+child { node {$2<Variables>$}
+child { node {\textbf{VARIABLES} \textit{VARIABLES}}
+ }
+child { node {$4<VarList>$}
+child { node {\textbf{VARNAME} \textit{number}}
+ }
+child { node {$5<VarList\_prim>$}
+child { node {\textbf{COMMA} \textit{,}}
+ }
+child { node {\textbf{VARNAME} \textit{result}}
+ }
+ }
+ }
+child { node {\textbf{ENDLINE} \textit{
+}}
+ }
+ }
+child { node {$7<Code>$}
+child { node {$14<Instruction>$}
+child { node {$48<Read>$}
+child { node {\textbf{READ} \textit{READ}}
+ }
+child { node {\textbf{LPAREN} \textit{(}}
+ }
+child { node {$4<VarList>$}
+child { node {\textbf{VARNAME} \textit{number}}
+ }
+ }
+child { node {\textbf{RPAREN} \textit{)}}
+ }
+ }
+ }
+child { node {\textbf{ENDLINE} \textit{
+}}
+ }
+child { node {$7<Code>$}
+child { node {$11<Instruction>$}
+child { node {$45<While>$}
+child { node {\textbf{WHILE} \textit{WHILE}}
+ }
+child { node {\textbf{LPAREN} \textit{(}}
+ }
+child { node {$31<Cond>$}
+child { node {$34<AndCond>$}
+child { node {$37<SimpleCond>$}
+child { node {$16<ExprArith>$}
+child { node {$20<Term>$}
+child { node {$25<Atom>$}
+child { node {\textbf{VARNAME} \textit{result}}
+ }
+ }
+ }
+ }
+child { node {$41<Comp>$}
+child { node {\textbf{LT} \textit{<}}
+ }
+ }
+child { node {$16<ExprArith>$}
+child { node {$20<Term>$}
+child { node {$25<Atom>$}
+child { node {\textbf{VARNAME} \textit{number}}
+ }
+ }
+ }
+ }
+ }
+ }
+ }
+child { node {\textbf{RPAREN} \textit{)}}
+ }
+child { node {\textbf{DO} \textit{DO}}
+ }
+child { node {\textbf{ENDLINE} \textit{
+}}
+ }
+child { node {$7<Code>$}
+child { node {$13<Instruction>$}
+child { node {$47<Print>$}
+child { node {\textbf{PRINT} \textit{PRINT}}
+ }
+child { node {\textbf{LPAREN} \textit{(}}
+ }
+child { node {$49<ExpList>$}
+child { node {$16<ExprArith>$}
+child { node {$20<Term>$}
+child { node {$25<Atom>$}
+child { node {\textbf{VARNAME} \textit{result}}
+ }
+ }
+ }
+ }
+ }
+child { node {\textbf{RPAREN} \textit{)}}
+ }
+ }
+ }
+child { node {\textbf{ENDLINE} \textit{
+}}
+ }
+child { node {$7<Code>$}
+child { node {$9<Instruction>$}
+child { node {$15<Assign>$}
+child { node {\textbf{VARNAME} \textit{result}}
+ }
+child { node {\textbf{ASSIGN} \textit{:=}}
+ }
+child { node {$16<ExprArith>$}
+child { node {$20<Term>$}
+child { node {$25<Atom>$}
+child { node {\textbf{VARNAME} \textit{result}}
+ }
+ }
+ }
+child { node {$17<ExprArith\_prim>$}
+child { node {\textbf{PLUS} \textit{+}}
+ }
+child { node {$20<Term>$}
+child { node {$24<Atom>$}
+child { node {\textbf{NUMBER} \textit{1}}
+ }
+ }
+ }
+ }
+ }
+ }
+ }
+child { node {\textbf{ENDLINE} \textit{
+}}
+ }
+ }
+ }
+child { node {\textbf{ENDWHILE} \textit{ENDWHILE}}
+ }
+ }
+ }
+child { node {\textbf{ENDLINE} \textit{
+}}
+ }
+ }
+ }
+child { node {\textbf{ENDPROG} \textit{ENDPROG}}
+ }
+;
+\end{tikzpicture}
+
+\end{document}
+%% Local Variables:
+%% TeX-engine: luatex
+%% End:

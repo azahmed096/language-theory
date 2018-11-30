@@ -1,0 +1,8 @@
+BEGINPROG Factorial
+VARIABLES number, result
+  READ(number)
+  WHILE (result < number) DO
+    PRINT(result)
+    result := result + 1
+  ENDWHILE
+ENDPROG

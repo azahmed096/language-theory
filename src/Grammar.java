@@ -4,11 +4,14 @@
 class Grammar {
     private static String[] rules = new String[] {
         /* 1 */"<Program> -> BEGINPROG [ProgName] [EndLine] <Variables> <Code> ENDPROG",
+
+
         /* 2 */"<Variables> -> VARIABLES <VarList> [EndLine]",
         /* 3 */"<Variables> -> ɛ",
         /* 4 */"<VarList> -> [VarName] <VarList_prim>",
         /* 5 */"<VarList_prim> -> , [VarName] <VarList_prim>",
         /* 6 */"<VarList_prim> -> ɛ",
+
         /* 7 */"<Code> -> <Instruction> [EndLine] <Code>",
         /* 8 */"<Code> -> ɛ",
         /* 9 */"<Instruction> -> <Assign>",
@@ -17,7 +20,10 @@ class Grammar {
         /* 12 */"<Instruction> -> <For>",
         /* 13 */"<Instruction> -> <Print>",
         /* 14 */"<Instruction> -> <Read>",
+
+        // USE EXPRESSION
         /* 15 */"<Assign> -> [VarName] := <ExprArith>",
+
         /* 16 */"<ExprArith> -> <Term> <ExprArith_prim>",
         /* 17 */"<ExprArith_prim> -> + <Term> <ExprArith_prim>",
         /* 18 */"<ExprArith_prim> -> - <Term> <ExprArith_prim>",
@@ -30,9 +36,12 @@ class Grammar {
         /* 25 */"<Atom> -> [VarName]",
         /* 26 */"<Atom> -> ( <ExprArith> )",
         /* 27 */"<Atom> -> - <Atom>",
+
+        // USE EXPRESSION
         /* 28 */"<If> -> IF ( <Cond> ) THEN [EndLine] <Code> <IfSeq>",
         /* 29 */"<IfSeq> -> ENDIF",
         /* 30 */"<IfSeq> -> ELSE [EndLine] <Code> ENDIF",
+
         /* 31 */"<Cond> -> <AndCond> <Cond_prim>",
         /* 32 */"<Cond_prim> -> OR <AndCond> <Cond_prim>",
         /* 33 */"<Cond_prim> -> ɛ",
@@ -47,10 +56,19 @@ class Grammar {
         /* 42 */"<Comp> -> >=",
         /* 43 */"<Comp> -> >",
         /* 44 */"<Comp> -> <>",
+
+        // USE EXPRESSION
         /* 45 */"<While> -> WHILE ( <Cond> ) DO [EndLine] <Code> ENDWHILE",
+
+        // USE EXPRESSION
         /* 46 */"<For> -> FOR [VarName] := <ExprArith> TO <ExprArith> DO [EndLine] <Code> ENDFOR",
+
+        // USE EXPRESSION
         /* 47 */"<Print> -> PRINT ( <ExpList> )",
+
+        // USE EXPRESSION
         /* 48 */"<Read> -> READ ( <VarList> )",
+
         /* 49 */"<ExpList> -> <ExprArith> <ExpList_prim>",
         /* 50 */"<ExpList_prim> -> , <ExprArith> <ExpList_prim>",
         /* 51 */"<ExpList_prim> -> ɛ"

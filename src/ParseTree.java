@@ -1,5 +1,6 @@
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /** A skeleton class to represent parse trees.
  *  The arity is not fixed: a node can have 0, 1 or more children.
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 public class ParseTree {
     private Symbol label;             // The label of the root of the tree
     private List<ParseTree> children; // Its children, which are trees themselves
+    private int rule = -1;
 
     /** Creates a singleton tree with only a root labeled by lbl.
      * @param lbl The label of the root
@@ -33,6 +35,19 @@ public class ParseTree {
         this.children = new ArrayList<ParseTree>();
     }
 
+    public List<ParseTree> getChildren() {
+        // return Collections.unmodifiableList(this.children);
+        return children;
+    }
+
+    public void setChildern(List<ParseTree> children) {
+        this.children = new ArrayList<>(children);
+    }
+
+    public Symbol getLabel(){
+        return this.label;
+    }
+
     /** Creates a tree with root labeled by lbl and children chdn.
      * @param lbl The label of the root
      * @param chdn Its children
@@ -42,11 +57,19 @@ public class ParseTree {
         this.children = chdn;
     }
 
+    public int getRule() {
+        return this.rule;
+    }
+
     /** Creates a singleton tree with root labeled by nonTerm and children chdn.
+     * TODO check doc
      * @param nonTerm The label of the root, given as a String
      * @param chdn Its children
      */
-    public ParseTree(String nonTerm, List<ParseTree> chdn) {
+    public ParseTree(int ruleNumber, List<ParseTree> chdn) {
+        this.rule = ruleNumber;
+        String nonTerm = Grammar.rule(ruleNumber);
+        nonTerm = nonTerm.substring(0, nonTerm.indexOf('>') + 1);
         this.label = new Symbol(nonTerm);
         this.children = chdn;
     }
@@ -88,11 +111,13 @@ public class ParseTree {
     /** Return better latex formatting for terminals
      * 
      */
-    private static String labelToTex(Symbol label){
+    private String labelToTex(Symbol label){
         if (label.isEpsilon()){
             return "$\\varepsilon$";
         } else if (!label.isTerminal()){
-	    return label.getValue().toString();
+            return "$" + getRule() + label
+            .getValue()
+            .toString().replace("_", "\\_") + "$";
         }
         return String.format("\\textbf{%s} \\textit{%s}", label.getType(), label.getValue());
     }
@@ -109,7 +134,6 @@ public class ParseTree {
         for (int i = 0; i < level; ++i){
             space = space + "\t";
         }
-        System.out.println(space+tree.label);
         if (tree.children == null) return;
         for (ParseTree son: tree.children){
             print(son, level + 1);

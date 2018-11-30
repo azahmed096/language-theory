@@ -30,7 +30,13 @@ public class Main {
 			symboles.add(new Symbol(LexicalUnit.EOS));
 			Iterator<Symbol> iterator = symboles.iterator();
 			try{
-				new Parser(iterator).beginParse(cfg);
+				ParseTree tree = new Parser(iterator).beginParse(cfg);
+				List<String> s = new CodeGenerator().generateProgram(tree, table);
+				System.out.println(Java8util.Stringjoin("\n", s));
+				// BroTree lcrs = new BroTree(tree);
+				// BinaryTree bin = new BinaryConverter().fromBro(lcrs);
+				// cfg.getTexStream().write(bin.toLaTeX());
+				// cfg.getTexStream().close();
 			} catch(UnexpectedTokenException e){
 				System.err.println("Unexpected token" + e.getMessage());
 			}

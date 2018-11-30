@@ -7,11 +7,15 @@
             "cwd": "${workspaceFolder}",
             "console": "internalConsole",
             "stopOnEntry": false,
-            "mainClass": "Parser",
+            "mainClass": "Main",
             "classPaths": [
                 "./",
                 "./build/"
-            ]
+            ],
+            "sourcePaths": [
+                "./src/"
+            ],
+            "args": "-wt ./tree.tex ./test/05-Expr.sf"
         }
     ]
 }

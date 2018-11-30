@@ -33,8 +33,6 @@ INPUT /usr/share/texlive/texmf-dist/tex/latex/makecell/makecell.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/makecell/makecell.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/tools/array.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/tools/array.sty
-INPUT report.aux
-INPUT report.aux
 OUTPUT report.aux
 INPUT /usr/share/texlive/texmf-dist/tex/latex/base/ts1cmr.fd
 INPUT /usr/share/texlive/texmf-dist/tex/latex/base/ts1cmr.fd

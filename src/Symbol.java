@@ -7,7 +7,10 @@ public class Symbol{
 	private final int line,column;
 
 	public Symbol(LexicalUnit unit,int line,int column,Object value){
-    this.type	= unit;
+	this.type	= unit;
+		if (line == 0 || column == 0) {
+			// System.out.println(unit +" " + value);
+		}
 		this.line	= line+1;
 		// ajout du +1 pour la colonne
 		this.column	= column+1;
