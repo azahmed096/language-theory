@@ -14,29 +14,28 @@ public class CodeGenerator {
         makeBuiltins();
         List<ParseTree> childs = tree.getChildren();
         if (childs.size() == 4) {
-            makeMain(null);
+            makeMain(null, null);
         } else if (childs.size() == 5) {
             ParseTree beforeLast = childs.get(3);
             if (beforeLast.getRule() == 2) {
                 variables(beforeLast);
-                makeMain(null);
+                makeMain(null, beforeLast);
             } else {
                 assert beforeLast.getRule() == 7;
-                makeMain(beforeLast);
+                makeMain(beforeLast, null);
             }
         } else {
             assert childs.size() == 6;
             ParseTree vars = tree.getChildren().get(3);
             ParseTree code = tree.getChildren().get(4);
-            variables(vars);
-            makeMain(code);
+            makeMain(code, vars);
         }
         return instructions;
     }
 
     private void addVariableDeclaration(String name) {
-        instructions.add("@" + name + " = global i32 0");
-        // instructions.add("%" + name + " = alloca i32 0");
+        // instructions.add("@" + name + " = global i32 0");
+        instructions.add("%" + name + " = alloca i32");
     }
 
     private void variables(ParseTree tree) {
@@ -53,8 +52,11 @@ public class CodeGenerator {
         }
     }
 
-    private void makeMain(ParseTree tree) {
+    private void makeMain(ParseTree tree, ParseTree vars) {
         instructions.add("define i32 @main(){");
+        if (vars != null) {
+            variables(vars);
+        }
         if (tree != null) {
             code(tree);
         }
@@ -101,7 +103,7 @@ public class CodeGenerator {
         ParseTree expr = tree.getChildren().get(2);
         String val = new Expression(new BroTree(expr), instructions, registers).getValue();
         String dest = tree.getChildren().get(0).getLabel().getValue().toString();
-        instructions.add(String.format("store i32 %s, i32* @%s", val, dest));
+        store(dest, val);
     }
 
     private void label(String label) {
@@ -115,6 +117,7 @@ public class CodeGenerator {
     }
 
     private void jump(String label) {
+        registers.increment();
         instructions.add("br label %" + label);
     }
     private int x = 0;
@@ -139,7 +142,7 @@ public class CodeGenerator {
         ParseTree condTree = tree.getChildren().get(2);
         String cond = new Expression(new BroTree(condTree), instructions, registers).getValue();
         String id = getId(tree);
-        System.out.println("id:" + tree.getLabel());
+        // System.out.println("id:" + tree.getLabel());
         String trueLabel = "true" + id;
         String falseLabel = "false" + id;
         String endLabel = "end" + id;
@@ -186,8 +189,69 @@ public class CodeGenerator {
         label(outsideLabel);
     }
 
+    /**
+     * for:
+     *  FOR a := expr1 TO expr2 DO  {code_A} ENDFOR
+     * gives:
+     *   src = expr1
+     *   targ = expr2
+     *   if src < targ jump positive else negative
+     *  positve:
+     *   inc = 1
+     *   jump beginLabel
+     *  negative:
+     *   inc = -1
+     *  beginLabel
+     *   if src == targ jump outsideLabel else insideLabel
+     *  insideLabel:
+     *   code_a
+     *   src += inc
+     *   jump beginLabel
+     *  outsideLabel:
+     */
     private void for_(ParseTree tree) {
-        instructions.add("FOR LOOP");
+        ParseTree src = tree.getChildren().get(3);
+        ParseTree targ = tree.getChildren().get(5);
+        ParseTree code = tree.getChildren().get(8);
+        String varFor = tree.getChildren().get(1).getLabel().getValue().toString();
+        String id = getId(tree);
+        String positiveLabel = "positive" + id;
+        String negativeLabel = "negative" + id;
+        String beginLabel = "begin" + id;
+        String compareLabel = "compare" + id;
+        String insideLabel = "inside" + id;
+        String outsideLabel = "outside" + id;
+
+        String from = new Expression(new BroTree(src), instructions, registers).getValue();
+        String to = new Expression(new BroTree(targ), instructions, registers).getValue();
+        String ascending = Expression.LessThan(from, to, instructions, registers).getValue();
+        String varIncrement = "incrementer_" + id; // registers.getNewRegister();
+        instructions.add("%" + varIncrement + " = alloca i32");
+        instructions.add("%" + varFor + " = alloca i32");
+        store(varFor, from);
+
+        jump(ascending, positiveLabel, negativeLabel);
+        label(positiveLabel);
+        store(varIncrement, "1");
+        jump(beginLabel);
+        label(negativeLabel);
+        store(varIncrement, "-1");
+        label(beginLabel);
+        label(compareLabel);
+        String cond = Expression.eq(varFor, to, instructions, registers).getValue();
+        jump(cond, outsideLabel, insideLabel);
+        label(insideLabel);
+        code(code);
+        String tempinc = registers.getNewRegister();
+        instructions.add(tempinc + " = load i32, i32* %" + varIncrement);
+        String temp = Expression.sum(varFor, tempinc, instructions, registers).getValue();
+        store(varFor, temp);
+        jump(compareLabel);
+        label(outsideLabel);
+    }
+
+    private void store(String variableName, String source){
+        instructions.add("store i32 "+source+", i32* %"+variableName);
     }
 
     private void read(ParseTree tree) {
@@ -195,7 +259,7 @@ public class CodeGenerator {
         String temp = registers.getNewRegister();
         String variable = tree.getChildren().get(2).getChildren().get(0).getLabel().getValue().toString();
         instructions.add(temp + " = call i32 @readInt()");
-        instructions.add("store i32 " + temp + ", i32* @" + variable);
+        store(variable, temp);
     }
 
     private void print(ParseTree tree) {

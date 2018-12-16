@@ -3,7 +3,7 @@ VARIABLES number, result
   READ(number)
   result := 1
   IF (number >= 0) THEN
-    FOR i := 1 TO number DO
+    FOR i := 1 TO number + 1 DO
       result := result * i
     ENDFOR
     PRINT(result)

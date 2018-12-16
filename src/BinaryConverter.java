@@ -64,7 +64,7 @@ public class BinaryConverter {
             break;
         case 37:
             result = new BinaryTree();
-            result.value = "<"; // TODO
+            result.value = exp.son.bro.son.symbol.getValue().toString(); // TODO
             result.setLeft(getFilled(exp.son));
             result.setRight(getFilled(exp.son.bro.bro));
             break;

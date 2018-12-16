@@ -52,9 +52,29 @@ child { node {\textbf{ENDLINE} \textit{
 }}
  }
 child { node {$7<Code>$}
-child { node {$11<Instruction>$}
-child { node {$45<While>$}
-child { node {\textbf{WHILE} \textit{WHILE}}
+child { node {$9<Instruction>$}
+child { node {$15<Assign>$}
+child { node {\textbf{VARNAME} \textit{result}}
+ }
+child { node {\textbf{ASSIGN} \textit{:=}}
+ }
+child { node {$16<ExprArith>$}
+child { node {$20<Term>$}
+child { node {$24<Atom>$}
+child { node {\textbf{NUMBER} \textit{1}}
+ }
+ }
+ }
+ }
+ }
+ }
+child { node {\textbf{ENDLINE} \textit{
+}}
+ }
+child { node {$7<Code>$}
+child { node {$10<Instruction>$}
+child { node {$28<If>$}
+child { node {\textbf{IF} \textit{IF}}
  }
 child { node {\textbf{LPAREN} \textit{(}}
  }
@@ -64,19 +84,19 @@ child { node {$37<SimpleCond>$}
 child { node {$16<ExprArith>$}
 child { node {$20<Term>$}
 child { node {$25<Atom>$}
-child { node {\textbf{VARNAME} \textit{result}}
+child { node {\textbf{VARNAME} \textit{number}}
  }
  }
  }
  }
-child { node {$41<Comp>$}
-child { node {\textbf{LT} \textit{<}}
+child { node {$42<Comp>$}
+child { node {\textbf{GEQ} \textit{>=}}
  }
  }
 child { node {$16<ExprArith>$}
 child { node {$20<Term>$}
-child { node {$25<Atom>$}
-child { node {\textbf{VARNAME} \textit{number}}
+child { node {$24<Atom>$}
+child { node {\textbf{NUMBER} \textit{0}}
  }
  }
  }
@@ -86,7 +106,85 @@ child { node {\textbf{VARNAME} \textit{number}}
  }
 child { node {\textbf{RPAREN} \textit{)}}
  }
+child { node {\textbf{THEN} \textit{THEN}}
+ }
+child { node {\textbf{ENDLINE} \textit{
+}}
+ }
+child { node {$7<Code>$}
+child { node {$12<Instruction>$}
+child { node {$46<For>$}
+child { node {\textbf{FOR} \textit{FOR}}
+ }
+child { node {\textbf{VARNAME} \textit{i}}
+ }
+child { node {\textbf{ASSIGN} \textit{:=}}
+ }
+child { node {$16<ExprArith>$}
+child { node {$20<Term>$}
+child { node {$24<Atom>$}
+child { node {\textbf{NUMBER} \textit{1}}
+ }
+ }
+ }
+ }
+child { node {\textbf{TO} \textit{TO}}
+ }
+child { node {$16<ExprArith>$}
+child { node {$20<Term>$}
+child { node {$25<Atom>$}
+child { node {\textbf{VARNAME} \textit{number}}
+ }
+ }
+ }
+child { node {$17<ExprArith\_prim>$}
+child { node {\textbf{PLUS} \textit{+}}
+ }
+child { node {$20<Term>$}
+child { node {$24<Atom>$}
+child { node {\textbf{NUMBER} \textit{1}}
+ }
+ }
+ }
+ }
+ }
 child { node {\textbf{DO} \textit{DO}}
+ }
+child { node {\textbf{ENDLINE} \textit{
+}}
+ }
+child { node {$7<Code>$}
+child { node {$9<Instruction>$}
+child { node {$15<Assign>$}
+child { node {\textbf{VARNAME} \textit{result}}
+ }
+child { node {\textbf{ASSIGN} \textit{:=}}
+ }
+child { node {$16<ExprArith>$}
+child { node {$20<Term>$}
+child { node {$25<Atom>$}
+child { node {\textbf{VARNAME} \textit{result}}
+ }
+ }
+child { node {$21<Term\_prim>$}
+child { node {\textbf{TIMES} \textit{*}}
+ }
+child { node {$25<Atom>$}
+child { node {\textbf{VARNAME} \textit{i}}
+ }
+ }
+ }
+ }
+ }
+ }
+ }
+child { node {\textbf{ENDLINE} \textit{
+}}
+ }
+ }
+child { node {\textbf{ENDFOR} \textit{ENDFOR}}
+ }
+ }
  }
 child { node {\textbf{ENDLINE} \textit{
 }}
@@ -115,24 +213,27 @@ child { node {\textbf{RPAREN} \textit{)}}
 child { node {\textbf{ENDLINE} \textit{
 }}
  }
+ }
+ }
+child { node {$30<IfSeq>$}
+child { node {\textbf{ELSE} \textit{ELSE}}
+ }
+child { node {\textbf{ENDLINE} \textit{
+}}
+ }
 child { node {$7<Code>$}
-child { node {$9<Instruction>$}
-child { node {$15<Assign>$}
-child { node {\textbf{VARNAME} \textit{result}}
+child { node {$13<Instruction>$}
+child { node {$47<Print>$}
+child { node {\textbf{PRINT} \textit{PRINT}}
  }
-child { node {\textbf{ASSIGN} \textit{:=}}
+child { node {\textbf{LPAREN} \textit{(}}
  }
+child { node {$49<ExpList>$}
 child { node {$16<ExprArith>$}
 child { node {$20<Term>$}
-child { node {$25<Atom>$}
-child { node {\textbf{VARNAME} \textit{result}}
+child { node {$27<Atom>$}
+child { node {\textbf{MINUS} \textit{-}}
  }
- }
- }
-child { node {$17<ExprArith\_prim>$}
-child { node {\textbf{PLUS} \textit{+}}
- }
-child { node {$20<Term>$}
 child { node {$24<Atom>$}
 child { node {\textbf{NUMBER} \textit{1}}
  }
@@ -141,18 +242,22 @@ child { node {\textbf{NUMBER} \textit{1}}
  }
  }
  }
- }
-child { node {\textbf{ENDLINE} \textit{
-}}
- }
- }
- }
-child { node {\textbf{ENDWHILE} \textit{ENDWHILE}}
+child { node {\textbf{RPAREN} \textit{)}}
  }
  }
  }
 child { node {\textbf{ENDLINE} \textit{
 }}
+ }
+ }
+child { node {\textbf{ENDIF} \textit{ENDIF}}
+ }
+ }
+ }
+ }
+child { node {\textbf{ENDLINE} \textit{
+}}
+ }
  }
  }
  }

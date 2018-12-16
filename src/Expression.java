@@ -26,6 +26,7 @@ public class Expression {
     private BinaryTree tree;
     private List<String> instructions;
     private Registers registers;
+    private String value;
 
     public Expression(BroTree tree, List<String> instructions, Registers registers) {
         this.tree = new BinaryConverter().fromBro(tree);
@@ -41,16 +42,22 @@ public class Expression {
     }
 
     public String getValue() {
-        return getValue(tree);
+        if (value == null) {
+            value = getValue(tree);
+        }
+        return value;
     }
 
     private String literal(String val) {
+        if (val.charAt(0) == '%') {
+            return val;
+        }
         try {
             Integer.valueOf(val);
             return val;
         } catch (NumberFormatException ignored) {
             String newRegister = registers.getNewRegister();
-            val = "@" + val;
+            val = "%" + val;
             instructions.add(newRegister + " = load i32, i32* " + val);
             return newRegister;
         }
@@ -60,6 +67,7 @@ public class Expression {
         if (tree.isLeaf()) {
             return literal(tree.value);
         }
+        // System.out.println("the value of "+ tree.value + " is " + operators.get(tree.value));
         String operator = operators.get(tree.value);
         String left = getValue(tree.getLeft());
         String right = getValue(tree.getRight());
@@ -67,5 +75,56 @@ public class Expression {
 
         emitBinOp(operator, newRegister, left, right);
         return newRegister;
+    }
+
+    private Expression(BinaryTree tree, List<String> instructions, Registers registers) {
+        this.tree = tree;
+        this.instructions = instructions;
+        this.registers = registers;
+    }
+
+    public static Expression LessThan(String left, String right, List<String> instructions, Registers registers) {
+        BinaryTree tree = new BinaryTree();
+        BinaryTree leftTree = new BinaryTree();
+        BinaryTree rightTree = new BinaryTree();
+        
+        leftTree.setValue(left);
+        rightTree.setValue(right);
+
+        tree.setValue("<");
+        tree.setLeft(leftTree);
+        tree.setRight(rightTree);
+
+        return new Expression(tree, instructions, registers);
+    }
+
+    public static Expression sum(String left, String right, List<String> instructions, Registers registers) {
+        BinaryTree tree = new BinaryTree();
+        BinaryTree leftTree = new BinaryTree();
+        BinaryTree rightTree = new BinaryTree();
+        
+        leftTree.setValue(left);
+        rightTree.setValue(right);
+
+        tree.setValue("+");
+        tree.setLeft(leftTree);
+        tree.setRight(rightTree);
+
+        return new Expression(tree, instructions, registers);
+    }
+
+    public static Expression eq(String left, String right, List<String> instructions, Registers registers) {
+        BinaryTree tree = new BinaryTree();
+        BinaryTree leftTree = new BinaryTree();
+        BinaryTree rightTree = new BinaryTree();
+        
+        leftTree.setValue(left);
+        rightTree.setValue(right);
+
+        tree.setValue("=");
+        tree.setLeft(leftTree);
+        tree.setRight(rightTree);
+
+        return new Expression(tree, instructions, registers);
     }
 }
