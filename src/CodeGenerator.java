@@ -18,7 +18,6 @@ public class CodeGenerator {
         } else if (childs.size() == 5) {
             ParseTree beforeLast = childs.get(3);
             if (beforeLast.getRule() == 2) {
-                variables(beforeLast);
                 makeMain(null, beforeLast);
             } else {
                 assert beforeLast.getRule() == 7;
