@@ -100,7 +100,7 @@ public class CodeGenerator {
 
     private void assign(ParseTree tree) {
         ParseTree expr = tree.getChildren().get(2);
-        String val = new Expression(new BroTree(expr), instructions, registers).getValue();
+        String val = new Expression(new LCRSTree(expr), instructions, registers).getValue();
         String dest = tree.getChildren().get(0).getLabel().getValue().toString();
         store(dest, val);
     }
@@ -139,7 +139,7 @@ public class CodeGenerator {
      */
     private void if_(ParseTree tree) {
         ParseTree condTree = tree.getChildren().get(2);
-        String cond = new Expression(new BroTree(condTree), instructions, registers).getValue();
+        String cond = new Expression(new LCRSTree(condTree), instructions, registers).getValue();
         String id = getId(tree);
         // System.out.println("id:" + tree.getLabel());
         String trueLabel = "true" + id;
@@ -180,7 +180,7 @@ public class CodeGenerator {
         ParseTree codeTree = tree.getChildren().get(6);
 
         label(beginLabel);
-        String cond = new Expression(new BroTree(condTree), instructions, registers).getValue();
+        String cond = new Expression(new LCRSTree(condTree), instructions, registers).getValue();
         jump(cond, insideLabel, outsideLabel);
         label(insideLabel);
         code(codeTree);
@@ -221,8 +221,8 @@ public class CodeGenerator {
         String insideLabel = "inside" + id;
         String outsideLabel = "outside" + id;
 
-        String from = new Expression(new BroTree(src), instructions, registers).getValue();
-        String to = new Expression(new BroTree(targ), instructions, registers).getValue();
+        String from = new Expression(new LCRSTree(src), instructions, registers).getValue();
+        String to = new Expression(new LCRSTree(targ), instructions, registers).getValue();
         String ascending = Expression.LessThan(from, to, instructions, registers).getValue();
         String varIncrement = "incrementer_" + id; // registers.getNewRegister();
         instructions.add("%" + varIncrement + " = alloca i32");
@@ -263,7 +263,7 @@ public class CodeGenerator {
 
     private void print(ParseTree tree) {
         ParseTree explist = tree.getChildren().get(2).getChildren().get(0);
-        String temp = new Expression(new BroTree(explist), instructions, registers).getValue();
+        String temp = new Expression(new LCRSTree(explist), instructions, registers).getValue();
         instructions.add("call void @println(i32 " + temp + ")");
     }
 }

@@ -16,11 +16,11 @@
  * a binary tree at its left.
  */
 public class BinaryConverter {
-    public BinaryTree fromBro(BroTree tree) {
+    public BinaryTree fromBro(LCRSTree tree) {
         return getFilled(tree).root();
     }
 
-    private BinaryTree getFilled(BroTree exp) {
+    private BinaryTree getFilled(LCRSTree exp) {
         BinaryTree result = null;
         switch (exp.getRule()) {
         case 16:
@@ -89,7 +89,7 @@ public class BinaryConverter {
      * @param prim derivation subtree of prim (or tail) rules.
      * @return Build a plugable tree (with no left child)
      */
-    private BinaryTree getPluggable(BroTree prim) {
+    private BinaryTree getPluggable(LCRSTree prim) {
         BinaryTree result = null;
 
         result = new BinaryTree();

@@ -28,7 +28,7 @@ public class Expression {
     private Registers registers;
     private String value;
 
-    public Expression(BroTree tree, List<String> instructions, Registers registers) {
+    public Expression(LCRSTree tree, List<String> instructions, Registers registers) {
         this.tree = new BinaryConverter().fromBro(tree);
         this.instructions = instructions;
         this.registers = registers;

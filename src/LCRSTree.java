@@ -3,22 +3,22 @@ import java.util.List;
 /**
  * Left child right sibling tree
  */
-public class BroTree {
-    private BroTree son;
-    private BroTree bro;
+public class LCRSTree {
+    private LCRSTree son;
+    private LCRSTree bro;
     private Symbol symbol;
     private int rule;
 
-    public BroTree(ParseTree tree) {
+    public LCRSTree(ParseTree tree) {
         this.symbol = tree.getLabel();
         this.rule = tree.getRule();
         List<ParseTree> childs = tree.getChildren();
         if (childs.size() > 0) {
-            this.son = new BroTree(childs.get(0));
+            this.son = new LCRSTree(childs.get(0));
         }
-        BroTree current = son;
+        LCRSTree current = son;
         for (int i = 1; i < childs.size(); ++i) {
-            BroTree next = new BroTree(childs.get(i));
+            LCRSTree next = new LCRSTree(childs.get(i));
             current.bro = next;
             current = next;
         }
@@ -28,11 +28,11 @@ public class BroTree {
         return symbol;
     }
 
-    public BroTree getRight() {
+    public LCRSTree getRight() {
         return bro;
     }
 
-    public BroTree getSon() {
+    public LCRSTree getSon() {
         return son;
     }
 
