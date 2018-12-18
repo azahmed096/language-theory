@@ -3,20 +3,20 @@ import java.util.List;
 
 
 public class VarListExtract {
-    private List<String> vars;
+    private List<ParseTree> nodes;
 
     public VarListExtract(ParseTree tree) {
-        vars = new ArrayList<>();
+        nodes = new ArrayList<>();
         if (tree.getRule() == 2){
             varList(tree.getChildren().get(1));
         } else {
-            assert tree.getRule() == 4;
+            assert tree.getRule() == 4 || tree.getRule() == 49;
             varList(tree);
         }
     }
 
     private void varList(ParseTree tree) {
-        vars.add(tree.getChildren().get(0).getLabel().getValue().toString());
+        nodes.add(tree.getChildren().get(0));
         if (tree.getChildren().size() > 1) {
             ParseTree varlistPrim = tree.getChildren().get(1);
             varListPrim(varlistPrim);
@@ -25,15 +25,23 @@ public class VarListExtract {
 
     private void varListPrim(ParseTree varlistPrim) {
         while (varlistPrim.getChildren().size() == 3) {
-            vars.add(varlistPrim.getChildren().get(1).getLabel().getValue().toString());
+            nodes.add(varlistPrim.getChildren().get(1));
             varlistPrim = varlistPrim.getChildren().get(2);
         }
         if (varlistPrim.getChildren().size() == 2) {
-            vars.add(varlistPrim.getChildren().get(1).getLabel().getValue().toString());
+            nodes.add(varlistPrim.getChildren().get(1));
         }
     }
 
-    public List<String> getList() {
-        return vars;
+    public List<ParseTree> getNodes() {
+        return nodes;
+    }
+
+    public List<String> getAsStrings() {
+        List<String> s = new ArrayList<>();
+        for (ParseTree tree: nodes) {
+            s.add(tree.getLabel().getValue().toString());
+        }
+        return s;
     }
 }

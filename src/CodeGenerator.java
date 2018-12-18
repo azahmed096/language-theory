@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 public class CodeGenerator {
@@ -19,7 +20,7 @@ public class CodeGenerator {
         } else if (childs.size() == 5) {
             ParseTree beforeLast = childs.get(3);
             if (beforeLast.getRule() == 2) {
-                variables = new VarListExtract(beforeLast).getList();
+                variables = new VarListExtract(beforeLast).getAsStrings();
                 makeMain(null);
             } else {
                 assert beforeLast.getRule() == 7;
@@ -28,7 +29,7 @@ public class CodeGenerator {
         } else {
             assert childs.size() == 6;
             ParseTree vars = tree.getChildren().get(3);
-            variables = new VarListExtract(vars).getList();
+            variables = new VarListExtract(vars).getAsStrings();
             ParseTree code = tree.getChildren().get(4);
             makeMain(code);
         }
@@ -36,7 +37,13 @@ public class CodeGenerator {
     }
 
     private void buildContext() {
-        for (Object name: variables){
+        HashSet<String> declared = new HashSet<>();
+
+        for (String name: variables){
+            if (declared.contains(name)) {
+                throw new RuntimeException("Variable " + "declared multiple time.");
+            }
+            declared.add(name);
             instructions.add("%" + name + " = alloca i32");
         }
         if (variables != null){
@@ -257,16 +264,23 @@ public class CodeGenerator {
 
     private void read(ParseTree tree) {
         // TODO multiple params READ
-        String temp = contextManager.newVar();
-        String variable = tree.getChildren().get(2).getChildren().get(0).getLabel().getValue().toString();
-        instructions.add(temp + " = call i32 @readInt()");
-        contextManager.assign(variable, temp);
+        List<String> variables = new VarListExtract(tree.getChildren().get(2)).getAsStrings();
+
+        for (String variable: variables) {
+            String temp = contextManager.newVar();
+            instructions.add(temp + " = call i32 @readInt()");
+            contextManager.assign(variable, temp);
+        }
     }
 
     private void print(ParseTree tree) {
-        ParseTree explist = tree.getChildren().get(2).getChildren().get(0);
-        String temp = new Expression(new LCRSTree(explist), instructions, contextManager).getValue();
-        instructions.add("call void @println(i32 " + temp + ")");
+        ParseTree explist = tree.getChildren().get(2);
+        List<ParseTree> expressions = new VarListExtract(explist).getNodes();
+
+        for (ParseTree exp: expressions) {
+            String temp = new Expression(new LCRSTree(exp), instructions, contextManager).getValue();
+            instructions.add("call void @println(i32 " + temp + ")");
+        }
     }
 }
 

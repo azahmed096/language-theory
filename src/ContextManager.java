@@ -44,8 +44,7 @@ public class ContextManager {
         if (index != -1) {
             return "%" + globales.get(index);
         }
-        System.out.println("Undeclared variable: " + identifier);
-        return null;
+        throw new RuntimeException("Undefined variable: " + identifier);
     }
 
     public void declareVariable(String identifier) {

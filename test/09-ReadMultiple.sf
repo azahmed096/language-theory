@@ -1,0 +1,9 @@
+/*
+    This program compute the mean of the 3 projects
+*/
+BEGINPROG Mean
+VARIABLES part1, part2, part3
+    READ(part1, part2, part3)
+    PRINT((part1 + part2 + part3) / 3)
+    PRINT(part1, part2, part3)
+ENDPROG

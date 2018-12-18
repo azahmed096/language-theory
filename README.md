@@ -1,8 +1,7 @@
 # à faire
 
-- [ ] Vérifier l'access à des variables non-existantes
-- [ ] Vérifier l'access à des variables non initialisées (ou les initialiser à 0 par default)
-- [ ] Vérifier que dans les variables déclarées tous ont des noms differents.
+- [x] Vérifier l'access à des variables non-existantes
+- [x] Vérifier que dans les variables déclarées tous ont des noms differents.
 - [ ] Ajouter le nom de la variable qui est lue par READ() pour que l utilisateur sache ce qu il entre
 
 # build report
