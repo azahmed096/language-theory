@@ -1,5 +1,8 @@
 import java.util.List;
 
+/**
+ * Left sibling right child tree
+ */
 public class BroTree {
     public BroTree son;
     public BroTree bro;
@@ -18,17 +21,6 @@ public class BroTree {
             BroTree next = new BroTree(childs.get(i));
             current.bro = next;
             current = next;
-        }
-    }
-
-    public void print() {
-        if (this.son == null) {
-            System.out.print(this.symbol.getValue());
-        } else {
-            this.son.print();
-        }
-        if (this.bro != null) {
-            this.bro.print();
         }
     }
 }
