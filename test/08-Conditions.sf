@@ -1,0 +1,34 @@
+BEGINPROG Factorial
+VARIABLES a, b, c, temp
+    READ(a)
+    READ(b)
+    READ(c)
+    // does not modify the value of c
+    c := ((c + c) * 4) - 7 * c
+
+    IF (a > b AND b > c) THEN
+        PRINT(a)
+        PRINT(b)
+        PRINT(c)
+    ELSE
+        IF (a > b AND b > c) THEN
+        PRINT(-1)
+        ELSE
+        FOR i := 1 TO 2 + 1 DO
+            IF (b < c) THEN
+                temp := b
+                b := c
+                c := temp
+            ENDIF
+            IF (a < b) THEN
+                temp := a
+                a := b
+                b := temp
+            ENDIF 
+        ENDFOR
+        ENDIF
+        PRINT(a)
+        PRINT(b)
+        PRINT(c)
+    ENDIF
+ENDPROG

@@ -48,14 +48,17 @@ public class Expression {
         return value;
     }
 
-    private String literal(String val) {
+    private String literalOrRegister(String val) {
         if (val.charAt(0) == '%') {
+            // already inside a register
             return val;
         }
         try {
+            // literal
             Integer.valueOf(val);
             return val;
         } catch (NumberFormatException ignored) {
+            // variable name, means variable load into register
             String newRegister = registers.getNewRegister();
             val = "%" + val;
             instructions.add(newRegister + " = load i32, i32* " + val);
@@ -65,10 +68,10 @@ public class Expression {
 
     private String getValue(BinaryTree tree) {
         if (tree.isLeaf()) {
-            return literal(tree.value);
+            return literalOrRegister(tree.getValue());
         }
         // System.out.println("the value of "+ tree.value + " is " + operators.get(tree.value));
-        String operator = operators.get(tree.value);
+        String operator = operators.get(tree.getValue());
         String left = getValue(tree.getLeft());
         String right = getValue(tree.getRight());
         String newRegister = registers.getNewRegister();

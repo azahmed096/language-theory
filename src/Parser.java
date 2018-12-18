@@ -366,12 +366,11 @@ public class Parser {
             break;
         case LPAREN:
             rule = 26;
-            // Here we dont add parenthesis to the tree
-            // So the node can be considered as having only
-            // on son and then simplified.
-            match(LexicalUnit.LPAREN);
-            sons = Arrays.asList(varExprArith());
-            match(LexicalUnit.RPAREN);
+            sons = Arrays.asList(
+                match(LexicalUnit.LPAREN),
+                varExprArith(),
+                match(LexicalUnit.RPAREN)
+            );
             break;
         case MINUS:
             rule = 27;

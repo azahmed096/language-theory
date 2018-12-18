@@ -1,10 +1,10 @@
 import java.util.Arrays;
 
 public class BinaryTree {
-    public BinaryTree left;
-    public BinaryTree right;
-    public BinaryTree parent;
-    public String value;
+    private BinaryTree left;
+    private BinaryTree right;
+    private BinaryTree parent;
+    private String value;
 
     public BinaryTree getLeft() {
         return left;
@@ -32,37 +32,14 @@ public class BinaryTree {
         this.value = value;
     }
 
+    public String getValue() {
+        return value;
+    }
+
     public BinaryTree root() {
         BinaryTree res = this;
         while (res.parent != null) {
             res = res.parent;
-        }
-        return res;
-    }
-
-    public void print() {
-        if (left != null) {
-            left.print(1);
-            right.print(1);
-        }
-    }
-
-    private void print(int x) {
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < x; i++) {
-            builder.append(' ');
-        }
-        if (left != null) {
-            left.print(x + 1);
-            right.print(x + 1);
-        }
-    }
-
-    public ParseTree toParseTree() {
-        ParseTree res = new ParseTree(value);
-        if (left != null) {
-            assert right != null;
-            res.setChildern(Arrays.asList(left.toParseTree(), right.toParseTree()));
         }
         return res;
     }
