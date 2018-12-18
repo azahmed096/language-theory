@@ -4,7 +4,8 @@ import java.util.List;
 
 public class CodeGenerator {
     private ArrayList<String> instructions = new ArrayList<>();
-    private Registers registers = new Registers();
+    private List<String> variables;
+    ContextManager contextManager;
 
     public void increment() {
         this.x++;
@@ -14,51 +15,40 @@ public class CodeGenerator {
         makeBuiltins();
         List<ParseTree> childs = tree.getChildren();
         if (childs.size() == 4) {
-            makeMain(null, null);
+            makeMain(null);
         } else if (childs.size() == 5) {
             ParseTree beforeLast = childs.get(3);
             if (beforeLast.getRule() == 2) {
-                makeMain(null, beforeLast);
+                variables = new VarListExtract(beforeLast).getList();
+                makeMain(null);
             } else {
                 assert beforeLast.getRule() == 7;
-                makeMain(beforeLast, null);
+                makeMain(beforeLast);
             }
         } else {
             assert childs.size() == 6;
             ParseTree vars = tree.getChildren().get(3);
+            variables = new VarListExtract(vars).getList();
             ParseTree code = tree.getChildren().get(4);
-            makeMain(code, vars);
+            makeMain(code);
         }
         return instructions;
     }
 
-    private void addVariableDeclaration(String name) {
-        // instructions.add("@" + name + " = global i32 0");
-        instructions.add("%" + name + " = alloca i32");
-    }
-
-    private void variables(ParseTree tree) {
-        ParseTree varlist = tree.getChildren().get(1);
-        addVariableDeclaration(varlist.getChildren().get(0).getLabel().getValue().toString());
-        if (varlist.getChildren().size() == 1) {
-            return;
+    private void buildContext() {
+        for (Object name: variables){
+            instructions.add("%" + name + " = alloca i32");
         }
-        ParseTree varlistPrim = varlist.getChildren().get(1);
-
-        while (varlistPrim.getChildren().size() == 3) {
-            addVariableDeclaration(varlistPrim.getChildren().get(1).getLabel().getValue().toString());
-            varlistPrim = varlistPrim.getChildren().get(2);
-        }
-        if (varlistPrim.getChildren().size() == 2) {
-            addVariableDeclaration(varlistPrim.getChildren().get(1).getLabel().getValue().toString());
+        if (variables != null){
+            contextManager = new ContextManager(instructions, variables);
+        } else {
+            contextManager = new ContextManager(instructions);
         }
     }
 
-    private void makeMain(ParseTree tree, ParseTree vars) {
+    private void makeMain(ParseTree tree) {
         instructions.add("define i32 @main(){");
-        if (vars != null) {
-            variables(vars);
-        }
+        buildContext();
         if (tree != null) {
             code(tree);
         }
@@ -103,9 +93,10 @@ public class CodeGenerator {
 
     private void assign(ParseTree tree) {
         ParseTree expr = tree.getChildren().get(2);
-        String val = new Expression(new LCRSTree(expr), instructions, registers).getValue();
+        String val = new Expression(new LCRSTree(expr), instructions, contextManager).getValue();
         String dest = tree.getChildren().get(0).getLabel().getValue().toString();
-        store(dest, val);
+        contextManager.assign(dest, val);
+        // store(contextManager.getVariable(dest), val);
     }
 
     private void label(String label) {
@@ -114,12 +105,12 @@ public class CodeGenerator {
     }
 
     private void jump(String condition, String trueLabel, String falseLabel) {
-        registers.increment();
+        contextManager.newVar();
         instructions.add("br i1 " + condition + ", label %" + trueLabel + ", label %" + falseLabel);
     }
 
     private void jump(String label) {
-        registers.increment();
+        contextManager.newVar();
         instructions.add("br label %" + label);
     }
     private int x = 0;
@@ -142,7 +133,7 @@ public class CodeGenerator {
      */
     private void if_(ParseTree tree) {
         ParseTree condTree = tree.getChildren().get(2);
-        String cond = new Expression(new LCRSTree(condTree), instructions, registers).getValue();
+        String cond = new Expression(new LCRSTree(condTree), instructions, contextManager).getValue();
         String id = getId(tree);
         // System.out.println("id:" + tree.getLabel());
         String trueLabel = "true" + id;
@@ -183,7 +174,7 @@ public class CodeGenerator {
         ParseTree codeTree = tree.getChildren().get(6);
 
         label(beginLabel);
-        String cond = new Expression(new LCRSTree(condTree), instructions, registers).getValue();
+        String cond = new Expression(new LCRSTree(condTree), instructions, contextManager).getValue();
         jump(cond, insideLabel, outsideLabel);
         label(insideLabel);
         code(codeTree);
@@ -213,12 +204,16 @@ public class CodeGenerator {
      *   jump beginLabel
      *  outsideLabel:
      */
+
+    private static final String INCREMENTER = "$increment";
     private void for_(ParseTree tree) {
         ParseTree src = tree.getChildren().get(3);
         ParseTree targ = tree.getChildren().get(5);
         ParseTree code = tree.getChildren().get(8);
         String id = getId(tree);
         String varFor = tree.getChildren().get(1).getLabel().getValue().toString();
+
+        // LABELS
         String positiveLabel = "positive" + id;
         String negativeLabel = "negative" + id;
         String beginLabel = "begin" + id;
@@ -226,50 +221,51 @@ public class CodeGenerator {
         String insideLabel = "inside" + id;
         String outsideLabel = "outside" + id;
 
-        String from = new Expression(new LCRSTree(src), instructions, registers).getValue();
-        String innerBound = new Expression(new LCRSTree(targ), instructions, registers).getValue();
-        String ascending = Expression.LessThan(from, innerBound, instructions, registers).getValue();
-        String varIncrement = "incrementer_" + id; // registers.getNewRegister();
-        instructions.add("%" + varIncrement + " = alloca i32");
-        instructions.add("%" + varFor + " = alloca i32");
-        store(varFor, from);
+        // since varFor iterator is not initiialized
+        // we cant use it so we are not yet in the new context
+        String from = new Expression(new LCRSTree(src), instructions, contextManager).getValue();
+        String innerBound = new Expression(new LCRSTree(targ), instructions, contextManager).getValue();
+        String ascending = Expression.LessThan(from, innerBound, instructions, contextManager).getValue();
+
+        // Entering context
+        contextManager.EnterContext();
+        contextManager.declareVariable(varFor);
+        contextManager.declareVariable(INCREMENTER);
+
+        contextManager.assign(varFor, from);
+
 
         jump(ascending, positiveLabel, negativeLabel);
         label(positiveLabel);
-        store(varIncrement, "1");
+        contextManager.assign(INCREMENTER, "1");
         jump(beginLabel);
         label(negativeLabel);
-        store(varIncrement, "-1");
+        contextManager.assign(INCREMENTER, "-1");
         label(beginLabel);
-        String outerBound = Expression.sum(innerBound, varIncrement, instructions, registers).getValue();
+        String outerBound = Expression.sum(innerBound, INCREMENTER, instructions, contextManager).getValue();
         label(compareLabel);
-        String cond = Expression.eq(varFor, outerBound, instructions, registers).getValue();
+        String cond = Expression.eq(varFor, outerBound, instructions, contextManager).getValue();
         jump(cond, outsideLabel, insideLabel);
         label(insideLabel);
         code(code);
-        String tempinc = registers.getNewRegister();
-        instructions.add(tempinc + " = load i32, i32* %" + varIncrement);
-        String temp = Expression.sum(varFor, tempinc, instructions, registers).getValue();
-        store(varFor, temp);
+        String temp = Expression.sum(varFor, INCREMENTER, instructions, contextManager).getValue();
+        contextManager.assign(varFor, temp);
         jump(compareLabel);
         label(outsideLabel);
-    }
-
-    private void store(String variableName, String source){
-        instructions.add("store i32 "+source+", i32* %"+variableName);
+        contextManager.exitContext();
     }
 
     private void read(ParseTree tree) {
         // TODO multiple params READ
-        String temp = registers.getNewRegister();
+        String temp = contextManager.newVar();
         String variable = tree.getChildren().get(2).getChildren().get(0).getLabel().getValue().toString();
         instructions.add(temp + " = call i32 @readInt()");
-        store(variable, temp);
+        contextManager.assign(variable, temp);
     }
 
     private void print(ParseTree tree) {
         ParseTree explist = tree.getChildren().get(2).getChildren().get(0);
-        String temp = new Expression(new LCRSTree(explist), instructions, registers).getValue();
+        String temp = new Expression(new LCRSTree(explist), instructions, contextManager).getValue();
         instructions.add("call void @println(i32 " + temp + ")");
     }
 }

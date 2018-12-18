@@ -25,13 +25,13 @@ public class Expression {
 
     private BinaryTree tree;
     private List<String> instructions;
-    private Registers registers;
+    private ContextManager contextManager;
     private String value;
 
-    public Expression(LCRSTree tree, List<String> instructions, Registers registers) {
+    public Expression(LCRSTree tree, List<String> instructions, ContextManager contextManager) {
         this.tree = new BinaryConverter().fromBro(tree);
         this.instructions = instructions;
-        this.registers = registers;
+        this.contextManager = contextManager;
     }
 
     private static String binOpFormat = "%s = %s %s, %s";
@@ -58,11 +58,7 @@ public class Expression {
             Integer.valueOf(val);
             return val;
         } catch (NumberFormatException ignored) {
-            // variable name, means variable load into register
-            String newRegister = registers.getNewRegister();
-            val = "%" + val;
-            instructions.add(newRegister + " = load i32, i32* " + val);
-            return newRegister;
+            return contextManager.getLoaded(val);
         }
     }
 
@@ -74,19 +70,19 @@ public class Expression {
         String operator = operators.get(tree.getValue());
         String left = getValue(tree.getLeft());
         String right = getValue(tree.getRight());
-        String newRegister = registers.getNewRegister();
+        String newRegister = contextManager.newVar();
 
         emitBinOp(operator, newRegister, left, right);
         return newRegister;
     }
 
-    private Expression(BinaryTree tree, List<String> instructions, Registers registers) {
+    private Expression(BinaryTree tree, List<String> instructions, ContextManager contextManager) {
         this.tree = tree;
         this.instructions = instructions;
-        this.registers = registers;
+        this.contextManager = contextManager;
     }
 
-    public static Expression LessThan(String left, String right, List<String> instructions, Registers registers) {
+    public static Expression LessThan(String left, String right, List<String> instructions, ContextManager contextManager) {
         BinaryTree tree = new BinaryTree();
         BinaryTree leftTree = new BinaryTree();
         BinaryTree rightTree = new BinaryTree();
@@ -98,10 +94,10 @@ public class Expression {
         tree.setLeft(leftTree);
         tree.setRight(rightTree);
 
-        return new Expression(tree, instructions, registers);
+        return new Expression(tree, instructions, contextManager);
     }
 
-    public static Expression sum(String left, String right, List<String> instructions, Registers registers) {
+    public static Expression sum(String left, String right, List<String> instructions, ContextManager contextManager) {
         BinaryTree tree = new BinaryTree();
         BinaryTree leftTree = new BinaryTree();
         BinaryTree rightTree = new BinaryTree();
@@ -113,10 +109,10 @@ public class Expression {
         tree.setLeft(leftTree);
         tree.setRight(rightTree);
 
-        return new Expression(tree, instructions, registers);
+        return new Expression(tree, instructions, contextManager);
     }
 
-    public static Expression eq(String left, String right, List<String> instructions, Registers registers) {
+    public static Expression eq(String left, String right, List<String> instructions, ContextManager contextManager) {
         BinaryTree tree = new BinaryTree();
         BinaryTree leftTree = new BinaryTree();
         BinaryTree rightTree = new BinaryTree();
@@ -128,6 +124,6 @@ public class Expression {
         tree.setLeft(leftTree);
         tree.setRight(rightTree);
 
-        return new Expression(tree, instructions, registers);
+        return new Expression(tree, instructions, contextManager);
     }
 }

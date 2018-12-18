@@ -1,8 +1,10 @@
 BEGINPROG Program
-    VARIABLES y
-    // x := 42
-    FOR x := 5 TO 0 DO
-        PRINT(x)
+    VARIABLES x
+    x := 42
+    FOR x := 0 TO 5 DO
+        FOR x := 0 TO 5 DO
+            PRINT(x)
+        ENDFOR
     ENDFOR
-    // PRINT(x)
+    PRINT(x)
 ENDPROG
