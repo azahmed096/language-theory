@@ -22,14 +22,14 @@ public class BinaryConverter {
 
     private BinaryTree getFilled(BroTree exp) {
         BinaryTree result = null;
-        switch (exp.rule) {
+        switch (exp.getRule()) {
         case 16:
         case 20: // Expr || Term
             // Term || Atom
-            result = getFilled(exp.son);
+            result = getFilled(exp.getSon());
             // expr_prim || term_prim
-            if (exp.son.bro != null) {
-                BinaryTree pluggable = getPluggable(exp.son.bro);
+            if (exp.getSon().hasBrother()) {
+                BinaryTree pluggable = getPluggable(exp.getSon().getRight());
                 assert pluggable.getLeft() == null;
                 pluggable.setLeft(result);
                 result = pluggable.root();
@@ -39,10 +39,10 @@ public class BinaryConverter {
         case 25:
             // Number or variable literal.
             result = new BinaryTree();
-            result.setValue(exp.son.symbol.getValue().toString());
+            result.setValue(exp.getSon().getSymbol().getValue().toString());
             break;
         case 26: // ( expression )
-            result = getFilled(exp.son.bro);
+            result = getFilled(exp.getSon().getRight());
             break;
         case 27:
             // A negatif number -n is the same as 0 - n
@@ -51,22 +51,22 @@ public class BinaryConverter {
             result.setRight(new BinaryTree());
             result.setValue("-");
             result.getLeft().setValue("0");
-            result.setRight(getFilled(exp.son.bro));
+            result.setRight(getFilled(exp.getSon().getRight()));
             break;
         case 31: // cond
         case 34: // andcond
-            result = getFilled(exp.son);
-            if (exp.son.bro != null) {
-                BinaryTree pluggable = getPluggable(exp.son.bro);
+            result = getFilled(exp.getSon());
+            if (exp.getSon().hasBrother()) {
+                BinaryTree pluggable = getPluggable(exp.getSon().getRight());
                 pluggable.setLeft(result);
                 result = pluggable.root();
             }
             break;
         case 37:
             result = new BinaryTree();
-            result.setValue(exp.son.bro.son.symbol.getValue().toString());
-            result.setLeft(getFilled(exp.son));
-            result.setRight(getFilled(exp.son.bro.bro));
+            result.setValue(exp.getSon().getRight().getSon().getSymbol().getValue().toString());
+            result.setLeft(getFilled(exp.getSon()));
+            result.setRight(getFilled(exp.getSon().getRight().getRight()));
             break;
         case 38:
             // NOT bit == 1 xor bit
@@ -75,7 +75,7 @@ public class BinaryConverter {
             left.setValue("1");
             result.setValue("NOT");
             result.setLeft(left);
-            result.setRight(getFilled(exp.son.bro));
+            result.setRight(getFilled(exp.getSon().getRight()));
             break;
         default:
             // we reach this only if we forgot a rule
@@ -93,10 +93,10 @@ public class BinaryConverter {
         BinaryTree result = null;
 
         result = new BinaryTree();
-        result.setValue(prim.son.symbol.getValue().toString());
-        result.setRight(getFilled(prim.son.bro));
-        if (prim.son.bro.bro != null) {
-            BinaryTree pluggable = getPluggable(prim.son.bro.bro);
+        result.setValue(prim.getSon().getSymbol().getValue().toString());
+        result.setRight(getFilled(prim.getSon().getRight()));
+        if (prim.getSon().getRight().hasBrother()) {
+            BinaryTree pluggable = getPluggable(prim.getSon().getRight().getRight());
             assert pluggable.getLeft() == null;
             pluggable.setLeft(result);
         }

@@ -1,13 +1,13 @@
 import java.util.List;
 
 /**
- * Left sibling right child tree
+ * Left child right sibling tree
  */
 public class BroTree {
-    public BroTree son;
-    public BroTree bro;
-    public Symbol symbol;
-    public int rule;
+    private BroTree son;
+    private BroTree bro;
+    private Symbol symbol;
+    private int rule;
 
     public BroTree(ParseTree tree) {
         this.symbol = tree.getLabel();
@@ -17,10 +17,30 @@ public class BroTree {
             this.son = new BroTree(childs.get(0));
         }
         BroTree current = son;
-        for (int i = 1; i < childs.size(); ++i){
+        for (int i = 1; i < childs.size(); ++i) {
             BroTree next = new BroTree(childs.get(i));
             current.bro = next;
             current = next;
         }
+    }
+
+    public Symbol getSymbol() {
+        return symbol;
+    }
+
+    public BroTree getRight() {
+        return bro;
+    }
+
+    public BroTree getSon() {
+        return son;
+    }
+
+    public boolean hasBrother() {
+        return bro != null;
+    }
+
+    public int getRule() {
+        return rule;
     }
 }
