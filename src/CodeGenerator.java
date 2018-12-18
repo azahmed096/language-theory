@@ -40,6 +40,9 @@ public class CodeGenerator {
     private void variables(ParseTree tree) {
         ParseTree varlist = tree.getChildren().get(1);
         addVariableDeclaration(varlist.getChildren().get(0).getLabel().getValue().toString());
+        if (varlist.getChildren().size() == 1) {
+            return;
+        }
         ParseTree varlistPrim = varlist.getChildren().get(1);
 
         while (varlistPrim.getChildren().size() == 3) {
@@ -201,6 +204,8 @@ public class CodeGenerator {
      *  negative:
      *   inc = -1
      *  beginLabel
+     *   targ += inc
+     *  compareLabel
      *   if src == targ jump outsideLabel else insideLabel
      *  insideLabel:
      *   code_a
@@ -212,8 +217,8 @@ public class CodeGenerator {
         ParseTree src = tree.getChildren().get(3);
         ParseTree targ = tree.getChildren().get(5);
         ParseTree code = tree.getChildren().get(8);
-        String varFor = tree.getChildren().get(1).getLabel().getValue().toString();
         String id = getId(tree);
+        String varFor = tree.getChildren().get(1).getLabel().getValue().toString();
         String positiveLabel = "positive" + id;
         String negativeLabel = "negative" + id;
         String beginLabel = "begin" + id;
@@ -222,8 +227,8 @@ public class CodeGenerator {
         String outsideLabel = "outside" + id;
 
         String from = new Expression(new LCRSTree(src), instructions, registers).getValue();
-        String to = new Expression(new LCRSTree(targ), instructions, registers).getValue();
-        String ascending = Expression.LessThan(from, to, instructions, registers).getValue();
+        String innerBound = new Expression(new LCRSTree(targ), instructions, registers).getValue();
+        String ascending = Expression.LessThan(from, innerBound, instructions, registers).getValue();
         String varIncrement = "incrementer_" + id; // registers.getNewRegister();
         instructions.add("%" + varIncrement + " = alloca i32");
         instructions.add("%" + varFor + " = alloca i32");
@@ -236,8 +241,9 @@ public class CodeGenerator {
         label(negativeLabel);
         store(varIncrement, "-1");
         label(beginLabel);
+        String outerBound = Expression.sum(innerBound, varIncrement, instructions, registers).getValue();
         label(compareLabel);
-        String cond = Expression.eq(varFor, to, instructions, registers).getValue();
+        String cond = Expression.eq(varFor, outerBound, instructions, registers).getValue();
         jump(cond, outsideLabel, insideLabel);
         label(insideLabel);
         code(code);

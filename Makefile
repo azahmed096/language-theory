@@ -3,13 +3,13 @@ SOURCE_DIR=$(shell readlink -f ./src)
 CLASS_PATH=$(shell readlink -f ./build)
 DOC_DIR=$(shell readlink -f ./doc)
 TEST_DIR=$(shell readlink -f ./test)
-TEST_FILE=08-Conditions.sf
+TEST_FILE=10-For.sf
 TEX_FILE=tree.tex
 DIST_DIR=$(shell readlink -f ./dist)
 CLASS_FILES:=$(CLASS_PATH)/Java8util.class $(CLASS_PATH)/Grammar.class $(CLASS_PATH)/Config.class
 CLASS_FILES+=$(CLASS_PATH)/UnexpectedTokenException.class $(CLASS_PATH)/LexicalUnit.class $(CLASS_PATH)/Symbol.class
 CLASS_FILES+=$(CLASS_PATH)/Lexer5.class $(CLASS_PATH)/SymbolTable.class $(CLASS_PATH)/ParseTree.class
-CLASS_FILES+=$(CLASS_PATH)/NodeVisitor.class $(CLASS_PATH)/Parser.class
+CLASS_FILES+=$(CLASS_PATH)/Parser.class
 CLASS_FILES+=$(CLASS_PATH)/LCRSTree.class $(CLASS_PATH)/BinaryTree.class $(CLASS_PATH)/BinaryConverter.class $(CLASS_PATH)/Registers.class
 CLASS_FILES+=$(CLASS_PATH)/Expression.class $(CLASS_PATH)/CodeGenerator.class $(CLASS_PATH)/Main.class
 # 
