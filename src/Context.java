@@ -1,4 +1,4 @@
-import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * Context are only usefull for FOR loops
@@ -10,13 +10,16 @@ public class Context {
     private static char sep = '_';
 
     private int counter;
-    private ArrayList<String> identifiers = new ArrayList<String>();
+    private HashSet<String> identifiers = new HashSet<String>();
 
     public Context(){
         counter = globalCounter++;
     }
 
     public void addVariable(String var){
+        if (hasVariable(var)) {
+            throw new RuntimeException("Variable " + var + " declared multiple time.");
+        }
         identifiers.add(var);
     }
 
@@ -26,7 +29,6 @@ public class Context {
 
     public String getConvertedName(String identifier) {
         assert hasVariable(identifier);
-        // TODO check?? refactor
         return "%" + identifier + sep + counter;
     }
 }

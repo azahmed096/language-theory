@@ -20,6 +20,11 @@ public class BinaryConverter {
         return getFilled(tree).root();
     }
 
+    /**
+     * The corresponding binary tree
+     * @param exp
+     * @return
+     */
     private BinaryTree getFilled(LCRSTree exp) {
         BinaryTree result = null;
         switch (exp.getRule()) {
