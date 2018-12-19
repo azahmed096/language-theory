@@ -1,0 +1,5 @@
+BEGINPROG While
+WHILE(x <= 1) DO
+x := x + 1
+ENDWHILE
+ENDPROG

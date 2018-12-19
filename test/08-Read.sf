@@ -1,0 +1,3 @@
+BEGINPROG Read
+READ(test,test,test2)
+ENDPROG

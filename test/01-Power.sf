@@ -1,0 +1,10 @@
+BEGINPROG Power
+VARIABLES number, power, result
+  READ(number)              // Read a number from user input
+  READ(power)               // Read a number used as a power from user input
+  result := 1
+  FOR i := 1 TO power DO
+    result := number * result   
+  ENDFOR
+  PRINT(result)
+ENDPROG

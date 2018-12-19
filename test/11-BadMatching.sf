@@ -1,0 +1,4 @@
+BEGINPROG MatchError
+PRINT)1(
+x := (1 + 2
+ENDPROG
