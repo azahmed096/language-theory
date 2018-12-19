@@ -429,7 +429,7 @@ public class Parser {
      */
     private ParseTree varCond() {
         rule(31);
-        List<ParseTree> childs = new ArrayList<>();
+        List<ParseTree> childs = new ArrayList<ParseTree>();
         childs.add(varAndCond());
         ParseTree prim = varCondPrim();
         if (prim != null) childs.add(prim);
@@ -459,7 +459,7 @@ public class Parser {
      */
     private ParseTree varAndCond() {
         rule(34);
-        List<ParseTree> childs = new ArrayList<>();
+        List<ParseTree> childs = new ArrayList<ParseTree>();
         childs.add(varSimpleCond());
         ParseTree prim = varAndCondPrim();
         if (prim != null) childs.add(prim);
@@ -474,7 +474,7 @@ public class Parser {
 
         if (lookAhead.getType() == LexicalUnit.AND) {
             rule(35);
-            List<ParseTree> childs = new ArrayList<>();
+            List<ParseTree> childs = new ArrayList<ParseTree>();
             childs.add(match(LexicalUnit.AND));
             childs.add(varSimpleCond());
             ParseTree prim = varAndCondPrim();
@@ -589,7 +589,7 @@ public class Parser {
      */
     private ParseTree varExpList() {
         rule(49);
-        List<ParseTree> childs = new ArrayList<>();
+        List<ParseTree> childs = new ArrayList<ParseTree>();
         childs.add(varExprArith());
         ParseTree prim = varExpListPrim();
         if (prim != null) childs.add(prim);
@@ -604,7 +604,7 @@ public class Parser {
 
         if (lookAhead.getType() == LexicalUnit.COMMA) {
             rule(50);
-            List<ParseTree> childs = new ArrayList<>();
+            List<ParseTree> childs = new ArrayList<ParseTree>();
             childs.add(match(LexicalUnit.COMMA));
             childs.add(varExprArith());
             ParseTree prim = varExpListPrim();

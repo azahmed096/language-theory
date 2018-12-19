@@ -6,7 +6,7 @@ import java.util.Map;
  * Expression
  */
 public class Expression {
-    private static Map<String, String> operators = new HashMap<>();
+    private static Map<String, String> operators = new HashMap<String, String>();
     static {
         operators.put("+", "add i32");
         operators.put("-", "sub i32");

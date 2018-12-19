@@ -10,7 +10,7 @@ public class Context {
     private static char sep = '_';
 
     private int counter;
-    private ArrayList<String> identifiers = new ArrayList<>();
+    private ArrayList<String> identifiers = new ArrayList<String>();
 
     public Context(){
         counter = globalCounter++;

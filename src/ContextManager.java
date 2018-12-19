@@ -3,8 +3,8 @@ import java.util.List;
 import java.util.Map;
 
 public class ContextManager {
-    private List<Context> contexts = new ArrayList<>();
-    private List<String> globales = new ArrayList<>();
+    private List<Context> contexts = new ArrayList<Context>();
+    private List<String> globales = new ArrayList<String>();
     private List<String> instructions;
     private Registers registers = new Registers();
 

@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 
 public class CodeGenerator {
-    private ArrayList<String> instructions = new ArrayList<>();
+    private ArrayList<String> instructions = new ArrayList<String>();
     private List<String> variables;
     ContextManager contextManager;
 
@@ -37,7 +37,7 @@ public class CodeGenerator {
     }
 
     private void buildContext() {
-        HashSet<String> declared = new HashSet<>();
+        HashSet<String> declared = new HashSet<String>();
 
         for (String name: variables){
             if (declared.contains(name)) {
