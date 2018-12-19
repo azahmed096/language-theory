@@ -41,6 +41,8 @@ public class CodeGenerator {
         if (variables != null){
             for (String name: variables){
                 contextManager.declareVariable(name);
+                // default initialization
+                contextManager.assign(name, "0");
             }
         }
     }
