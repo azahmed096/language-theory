@@ -3,39 +3,46 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
+/**
+ * Generate a list of LLVM instructions
+ * from a Program ParseTree
+ */
 public class CodeGenerator {
     private ArrayList<String> instructions = new ArrayList<String>();
     private List<String> variables;
     ContextManager contextManager;
 
-    public void increment() {
-        this.x++;
-    }
-
-    public List<String> generateProgram(ParseTree tree, SymbolTable table) {
+    /**
+     * @param tree Program tree
+     * @return list of LLVM instructions
+     */
+    public List<String> generateProgram(ParseTree tree) {
         makeBuiltins();
         List<ParseTree> childs = tree.getChildren();
         if (childs.size() == 4) {
-            makeMain(null);
+            emitMain(null);
         } else if (childs.size() == 5) {
             ParseTree beforeLast = childs.get(3);
             if (beforeLast.getRule() == 2) {
                 variables = new VarListExtract(beforeLast).getAsStrings();
-                makeMain(null);
+                emitMain(null);
             } else {
                 assert beforeLast.getRule() == 7;
-                makeMain(beforeLast);
+                emitMain(beforeLast);
             }
         } else {
             assert childs.size() == 6;
             ParseTree vars = tree.getChildren().get(3);
             variables = new VarListExtract(vars).getAsStrings();
             ParseTree code = tree.getChildren().get(4);
-            makeMain(code);
+            emitMain(code);
         }
         return instructions;
     }
 
+    /**
+     * Build the scope context manager
+     */
     private void buildContext() {
         contextManager = new ContextManager(instructions);
         if (variables != null){
@@ -47,52 +54,71 @@ public class CodeGenerator {
         }
     }
 
-    private void makeMain(ParseTree tree) {
+    /**
+     * Emit the main function with its body
+     * @param tree <code> node
+     */
+    private void emitMain(ParseTree tree) {
         instructions.add("define i32 @main(){");
         buildContext();
         if (tree != null) {
-            code(tree);
+            emitCode(tree);
         }
         instructions.add("ret i32 0\n}");
     }
 
+    /**
+     * Declare read and print functions
+     */
     private void makeBuiltins() {
         instructions.addAll(BuiltIns.list);
     }
 
-    private void code(ParseTree tree) {
+    /**
+     * Emit llvm code corresponding to the tree
+     * @param tree <code> tree
+     */
+    private void emitCode(ParseTree tree) {
         List<ParseTree> childs = tree.getChildren();
-        instruction(childs.get(0));
+        emitInstruction(childs.get(0));
         if (childs.size() > 2) {
-            code(childs.get(2));
+            emitCode(childs.get(2));
         }
     }
 
-    private void instruction(ParseTree tree) {
+    /**
+     * Emit an instruction
+     * @param tree <instruction> tree
+     */
+    private void emitInstruction(ParseTree tree) {
         ParseTree child = tree.getChildren().get(0);
         switch (tree.getRule()) {
             case 9:
-                assign(child);
+                emitAssign(child);
                 break;
             case 10:
-                if_(child);
+                emitIF(child);
                 break;
             case 11:
-                while_(child);
+                emitWhile(child);
                 break;
             case 12:
-                for_(child);
+                emitFor(child);
                 break;
             case 13:
-                print(child);
+                emitPrint(child);
                 break;
             case 14:
-                read(child);
+                emitRead(child);
                 break;
         }
     }
 
-    private void assign(ParseTree tree) {
+    /**
+     * emit assignation
+     * @param tree <assign> tree
+     */
+    private void emitAssign(ParseTree tree) {
         ParseTree expr = tree.getChildren().get(2);
         String val = new Expression(new LCRSTree(expr), instructions, contextManager).getValue();
         String dest = tree.getChildren().get(0).getLabel().getValue().toString();
@@ -100,22 +126,45 @@ public class CodeGenerator {
         // store(contextManager.getVariable(dest), val);
     }
 
-    private void label(String label) {
+    /**
+     * Emit a label
+     */
+    private void emitLabel(String label) {
         instructions.add("br label %" + label);
         instructions.add(label + ":");
     }
 
-    private void jump(String condition, String trueLabel, String falseLabel) {
+    /**
+     * Emit conditional jump
+     * @param condition bit condition
+     * @param trueLabel label to jump if condition is true
+     * @param falseLabel label to jump if condition is false
+     */
+    private void emitJump(String condition, String trueLabel, String falseLabel) {
         contextManager.newVar();
         instructions.add("br i1 " + condition + ", label %" + trueLabel + ", label %" + falseLabel);
     }
 
-    private void jump(String label) {
+    /**
+     * Emit a jump
+     * @param label to jump to
+     * 
+     * The difference between this and emitLabel is the need
+     * of incrementing the register counter
+     */
+    private void emitJump(String label) {
         contextManager.newVar();
         instructions.add("br label %" + label);
     }
     private int x = 0;
-    private String getId(ParseTree tree) {
+
+    /**
+     * @return a unique suffixe to add to labels
+     */
+    private String getId() {
+        // Can't depend on tree
+        // the symbol of tree has lost information
+        // of columns/line number
         String id = String.valueOf(x++);
         return id;
     }
@@ -132,26 +181,26 @@ public class CodeGenerator {
      *   code_b // if no else bloc is there, this line will not be there
      *  endlabel:
      */
-    private void if_(ParseTree tree) {
+    private void emitIF(ParseTree tree) {
         ParseTree condTree = tree.getChildren().get(2);
         String cond = new Expression(new LCRSTree(condTree), instructions, contextManager).getValue();
-        String id = getId(tree);
+        String id = getId();
         // System.out.println("id:" + tree.getLabel());
         String trueLabel = "true" + id;
         String falseLabel = "false" + id;
         String endLabel = "end" + id;
-        jump(cond, trueLabel, falseLabel);
-        label(trueLabel);
+        emitJump(cond, trueLabel, falseLabel);
+        emitLabel(trueLabel);
         ParseTree codeTree = tree.getChildren().get(6);
-        code(codeTree);
-        jump(endLabel);
-        label(falseLabel);
+        emitCode(codeTree);
+        emitJump(endLabel);
+        emitLabel(falseLabel);
         ParseTree ifSeq = tree.getChildren().get(7);
         if (ifSeq.getRule() == 30) {
             ParseTree codeTreeElse = ifSeq.getChildren().get(2);
-            code(codeTreeElse);
+            emitCode(codeTreeElse);
         }
-        label(endLabel);
+        emitLabel(endLabel);
     }
 
     /**
@@ -165,8 +214,8 @@ public class CodeGenerator {
      *   jump beginLabel
      *  outsideLabel:
      */
-    private void while_(ParseTree tree) {
-        String id = getId(tree);
+    private void emitWhile(ParseTree tree) {
+        String id = getId();
         String beginLabel = "begin" + id;
         String insideLabel = "inside" + id;
         String outsideLabel = "outside" + id;
@@ -174,15 +223,16 @@ public class CodeGenerator {
         ParseTree condTree = tree.getChildren().get(2);
         ParseTree codeTree = tree.getChildren().get(6);
 
-        label(beginLabel);
+        emitLabel(beginLabel);
         String cond = new Expression(new LCRSTree(condTree), instructions, contextManager).getValue();
-        jump(cond, insideLabel, outsideLabel);
-        label(insideLabel);
-        code(codeTree);
-        jump(beginLabel);
-        label(outsideLabel);
+        emitJump(cond, insideLabel, outsideLabel);
+        emitLabel(insideLabel);
+        emitCode(codeTree);
+        emitJump(beginLabel);
+        emitLabel(outsideLabel);
     }
 
+    private static final String INCREMENTER = "$increment";
     /**
      * for:
      *  FOR a := expr1 TO expr2 DO  {code_A} ENDFOR
@@ -205,13 +255,11 @@ public class CodeGenerator {
      *   jump beginLabel
      *  outsideLabel:
      */
-
-    private static final String INCREMENTER = "$increment";
-    private void for_(ParseTree tree) {
+    private void emitFor(ParseTree tree) {
         ParseTree src = tree.getChildren().get(3);
         ParseTree targ = tree.getChildren().get(5);
         ParseTree code = tree.getChildren().get(8);
-        String id = getId(tree);
+        String id = getId();
         String varFor = tree.getChildren().get(1).getLabel().getValue().toString();
 
         // LABELS
@@ -236,28 +284,31 @@ public class CodeGenerator {
         contextManager.assign(varFor, from);
 
 
-        jump(ascending, positiveLabel, negativeLabel);
-        label(positiveLabel);
+        emitJump(ascending, positiveLabel, negativeLabel);
+        emitLabel(positiveLabel);
         contextManager.assign(INCREMENTER, "1");
-        jump(beginLabel);
-        label(negativeLabel);
+        emitJump(beginLabel);
+        emitLabel(negativeLabel);
         contextManager.assign(INCREMENTER, "-1");
-        label(beginLabel);
+        emitLabel(beginLabel);
         String outerBound = Expression.sum(innerBound, INCREMENTER, instructions, contextManager).getValue();
-        label(compareLabel);
+        emitLabel(compareLabel);
         String cond = Expression.eq(varFor, outerBound, instructions, contextManager).getValue();
-        jump(cond, outsideLabel, insideLabel);
-        label(insideLabel);
-        code(code);
+        emitJump(cond, outsideLabel, insideLabel);
+        emitLabel(insideLabel);
+        emitCode(code);
         String temp = Expression.sum(varFor, INCREMENTER, instructions, contextManager).getValue();
         contextManager.assign(varFor, temp);
-        jump(compareLabel);
-        label(outsideLabel);
+        emitJump(compareLabel);
+        emitLabel(outsideLabel);
         contextManager.exitContext();
     }
 
-    private void read(ParseTree tree) {
-        // TODO multiple params READ
+    /**
+     * Emit read function calls
+     * @param tree <read> tree
+     */
+    private void emitRead(ParseTree tree) {
         List<String> variables = new VarListExtract(tree.getChildren().get(2)).getAsStrings();
 
         for (String variable: variables) {
@@ -267,7 +318,11 @@ public class CodeGenerator {
         }
     }
 
-    private void print(ParseTree tree) {
+    /**
+     * Emit print function calls
+     * @param tree <print> tree
+     */
+    private void emitPrint(ParseTree tree) {
         ParseTree explist = tree.getChildren().get(2);
         List<ParseTree> expressions = new VarListExtract(explist).getNodes();
 
@@ -278,6 +333,11 @@ public class CodeGenerator {
     }
 }
 
+/**
+ * Contais declarations of print and read
+ * 
+ * taken from practical sessions corrections
+ */
 class BuiltIns {
     static List<String> list;
     static {

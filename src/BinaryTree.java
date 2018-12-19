@@ -6,66 +6,65 @@ public class BinaryTree {
     private BinaryTree parent;
     private String value;
 
+    /**
+     * @return left child
+     */
     public BinaryTree getLeft() {
         return left;
     }
 
+    /**
+     * @return right child
+     */
     public BinaryTree getRight() {
         return right;
     }
 
+    /**
+     * @return True if the node is a leaf
+     */
     public boolean isLeaf() {
         return left == null && right == null;
     }
 
+    /**
+     * set the right child to the new value
+     */
     public void setRight(BinaryTree right) {
         this.right = right;
         right.parent = this;
     }
 
+    /**
+     * set the left child
+     */
     public void setLeft(BinaryTree left) {
         this.left = left;
         left.parent = this;
     }
 
+    /**
+     * Set the value to the new value
+     */
     public void setValue(String value) {
         this.value = value;
     }
 
+    /**
+     * @return the value
+     */
     public String getValue() {
         return value;
     }
 
+    /**
+     * @return the root of the tree
+     */
     public BinaryTree root() {
         BinaryTree res = this;
         while (res.parent != null) {
             res = res.parent;
         }
         return res;
-    }
-
-    public String toTikZPicture() {
-        return "\\begin{tikzpicture}[tree layout]\n\\" + toTikZ() + ";\n\\end{tikzpicture}";
-    }
-
-    public String toTikZ() {
-        StringBuilder treeTikZ = new StringBuilder();
-        treeTikZ.append("node {");
-        treeTikZ.append(value);
-        treeTikZ.append("}\n");
-        if (left != null) {
-            treeTikZ.append("child { ");
-            treeTikZ.append(left.toTikZ());
-            treeTikZ.append(" }\n");
-            treeTikZ.append("child { ");
-            treeTikZ.append(right.toTikZ());
-            treeTikZ.append(" }\n");
-        }
-        return treeTikZ.toString();
-    }
-
-    public String toLaTeX() {
-        return "\\RequirePackage{luatex85}\n\\documentclass{standalone}\n\n\\usepackage{tikz}\n\n\\usetikzlibrary{graphdrawing, graphdrawing.trees}\n\n\\begin{document}\n\n"
-                + toTikZPicture() + "\n\n\\end{document}\n%% Local Variables:\n%% TeX-engine: luatex\n%% End:";
     }
 }

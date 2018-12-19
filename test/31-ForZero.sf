@@ -1,0 +1,5 @@
+BEGINPROG Ok
+    FOR i := 5 TO 5 DO
+        PRINT(i)
+    ENDFOR
+ENDPROG
