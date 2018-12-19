@@ -37,16 +37,15 @@ public class CodeGenerator {
     }
 
     private void buildContext() {
-        HashSet<String> declared = new HashSet<String>();
-
-        for (String name: variables){
-            if (declared.contains(name)) {
-                throw new RuntimeException("Variable " + "declared multiple time.");
-            }
-            declared.add(name);
-            instructions.add("%" + name + " = alloca i32");
-        }
         if (variables != null){
+            HashSet<String> declared = new HashSet<String>();
+            for (String name: variables){
+                if (declared.contains(name)) {
+                    throw new RuntimeException("Variable " + "declared multiple time.");
+                }
+                declared.add(name);
+                instructions.add("%" + name + " = alloca i32");
+            }
             contextManager = new ContextManager(instructions, variables);
         } else {
             contextManager = new ContextManager(instructions);
