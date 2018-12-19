@@ -126,7 +126,7 @@ public class Parser {
      */
     private ParseTree varProgram() {
         rule(1);
-        List<ParseTree> childs = new ArrayList<>(Arrays.asList(match(LexicalUnit.BEGINPROG), match(LexicalUnit.PROGNAME),
+        List<ParseTree> childs = new ArrayList<ParseTree>(Arrays.asList(match(LexicalUnit.BEGINPROG), match(LexicalUnit.PROGNAME),
                 match(LexicalUnit.ENDLINE)));
         ParseTree variables = varVariables();
         if (variables != null) {
@@ -170,7 +170,7 @@ public class Parser {
      */
     private ParseTree varVarList() {
         rule(4);
-        List<ParseTree> childs = new ArrayList<>(Arrays.asList(match(LexicalUnit.VARNAME)));
+        List<ParseTree> childs = new ArrayList<ParseTree>(Arrays.asList(match(LexicalUnit.VARNAME)));
         ParseTree prim = varVarListPrim();
         if (prim != null) {
             childs.add(prim);
@@ -188,7 +188,7 @@ public class Parser {
 
         if (lookAhead.getType() == LexicalUnit.COMMA) {
             rule(5);
-            List<ParseTree> childs = new ArrayList<>(Arrays.asList(match(LexicalUnit.COMMA), match(LexicalUnit.VARNAME)));
+            List<ParseTree> childs = new ArrayList<ParseTree>(Arrays.asList(match(LexicalUnit.COMMA), match(LexicalUnit.VARNAME)));
             ParseTree prim = varVarListPrim();
             if (prim != null) {
                 childs.add(prim);
@@ -213,7 +213,7 @@ public class Parser {
         case PRINT:
         case READ:
             rule(7);
-            List<ParseTree> childs = new ArrayList<>(Arrays.asList(varInstruction(), match(LexicalUnit.ENDLINE)));
+            List<ParseTree> childs = new ArrayList<ParseTree>(Arrays.asList(varInstruction(), match(LexicalUnit.ENDLINE)));
             ParseTree code = varCode();
             if (code != null) {
                 childs.add(code);
@@ -389,7 +389,7 @@ public class Parser {
      */
     private ParseTree varIf() {
         rule(28);
-        List<ParseTree> childs = new ArrayList<>(Arrays.asList(match(LexicalUnit.IF), match(LexicalUnit.LPAREN), varCond(),
+        List<ParseTree> childs = new ArrayList<ParseTree>(Arrays.asList(match(LexicalUnit.IF), match(LexicalUnit.LPAREN), varCond(),
                 match(LexicalUnit.RPAREN), match(LexicalUnit.THEN), match(LexicalUnit.ENDLINE)));
         ParseTree code = varCode();
         if (code != null) {
@@ -410,7 +410,7 @@ public class Parser {
             return new ParseTree(29, Arrays.asList(match(LexicalUnit.ENDIF)));
         case ELSE:
             rule(30);
-            List<ParseTree> childs = new ArrayList<>(Arrays.asList(match(LexicalUnit.ELSE), match(LexicalUnit.ENDLINE)));
+            List<ParseTree> childs = new ArrayList<ParseTree>(Arrays.asList(match(LexicalUnit.ELSE), match(LexicalUnit.ENDLINE)));
             ParseTree code = varCode();
             if (code != null) {
                 childs.add(code);
@@ -444,7 +444,7 @@ public class Parser {
 
         if (lookAhead.getType() == LexicalUnit.OR) {
             rule(32);
-            List<ParseTree> childs = new ArrayList<>(Arrays.asList(match(LexicalUnit.OR), varAndCond()));
+            List<ParseTree> childs = new ArrayList<ParseTree>(Arrays.asList(match(LexicalUnit.OR), varAndCond()));
             ParseTree prim = varCondPrim();
             if (prim != null) childs.add(prim);
             return new ParseTree(32, childs);
@@ -536,7 +536,7 @@ public class Parser {
      */
     private ParseTree varWhile() {
         rule(45);
-        List<ParseTree> childs = new ArrayList<>(Arrays.asList(match(LexicalUnit.WHILE), match(LexicalUnit.LPAREN), varCond(),
+        List<ParseTree> childs = new ArrayList<ParseTree>(Arrays.asList(match(LexicalUnit.WHILE), match(LexicalUnit.LPAREN), varCond(),
                 match(LexicalUnit.RPAREN), match(LexicalUnit.DO), match(LexicalUnit.ENDLINE)));
         ParseTree code = varCode();
         if (code != null) {
@@ -552,7 +552,7 @@ public class Parser {
      */
     private ParseTree varFor() {
         rule(46);
-        List<ParseTree> childs = new ArrayList<>(Arrays.asList(match(LexicalUnit.FOR), match(LexicalUnit.VARNAME),
+        List<ParseTree> childs = new ArrayList<ParseTree>(Arrays.asList(match(LexicalUnit.FOR), match(LexicalUnit.VARNAME),
                 match(LexicalUnit.ASSIGN), varExprArith(), match(LexicalUnit.TO), varExprArith(), match(LexicalUnit.DO),
                 match(LexicalUnit.ENDLINE)));
         ParseTree code = varCode();

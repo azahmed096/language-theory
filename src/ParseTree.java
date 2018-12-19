@@ -41,7 +41,7 @@ public class ParseTree {
     }
 
     public void setChildern(List<ParseTree> children) {
-        this.children = new ArrayList<>(children);
+        this.children = new ArrayList<ParseTree>(children);
     }
 
     public Symbol getLabel(){

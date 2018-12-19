@@ -10,8 +10,8 @@ CLASS_FILES:=$(CLASS_PATH)/Java8util.class $(CLASS_PATH)/Grammar.class $(CLASS_P
 CLASS_FILES+=$(CLASS_PATH)/UnexpectedTokenException.class $(CLASS_PATH)/LexicalUnit.class $(CLASS_PATH)/Symbol.class
 CLASS_FILES+=$(CLASS_PATH)/Lexer5.class $(CLASS_PATH)/SymbolTable.class $(CLASS_PATH)/ParseTree.class
 CLASS_FILES+=$(CLASS_PATH)/Parser.class $(CLASS_PATH)/VarListExtract.class
-CLASS_FILES+=$(CLASS_PATH)/Context.class $(CLASS_PATH)/ContextManager.class
-CLASS_FILES+=$(CLASS_PATH)/LCRSTree.class $(CLASS_PATH)/BinaryTree.class $(CLASS_PATH)/BinaryConverter.class $(CLASS_PATH)/Registers.class
+CLASS_FILES+=$(CLASS_PATH)/Registers.class $(CLASS_PATH)/Context.class $(CLASS_PATH)/ContextManager.class
+CLASS_FILES+=$(CLASS_PATH)/LCRSTree.class $(CLASS_PATH)/BinaryTree.class $(CLASS_PATH)/BinaryConverter.class
 CLASS_FILES+=$(CLASS_PATH)/Expression.class $(CLASS_PATH)/CodeGenerator.class $(CLASS_PATH)/Main.class
 # 
 all: jar report javadoc
@@ -27,7 +27,7 @@ tree: execute $(TEX_FILE)
 $(DOC_DIR)/report.pdf: $(DOC_DIR)/report.tex
 	@cd $(DOC_DIR) && xelatex report.tex && xelatex report.tex
 
-compile: $(CLASS_FILES)
+compile: clean $(CLASS_FILES)
 
 
 execute: jar 
@@ -50,4 +50,3 @@ clean:
 
 javadoc:
 	cd $(SOURCE_DIR) && javadoc -d $(DOC_DIR) *.java
-

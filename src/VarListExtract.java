@@ -6,7 +6,7 @@ public class VarListExtract {
     private List<ParseTree> nodes;
 
     public VarListExtract(ParseTree tree) {
-        nodes = new ArrayList<String>();
+        nodes = new ArrayList<ParseTree>();
         if (tree.getRule() == 2){
             varList(tree.getChildren().get(1));
         } else {
