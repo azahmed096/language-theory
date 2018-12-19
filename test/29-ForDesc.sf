@@ -1,0 +1,8 @@
+// BONUS For loop decrement
+BEGINPROG Program
+    FOR x := 0 TO 2 DO
+        FOR y := 5 TO 0 DO
+            PRINT(x * y)
+        ENDFOR
+    ENDFOR
+ENDPROG

@@ -1,0 +1,9 @@
+// BONUS VARIABLE SCOOPING (undefined variable x)
+BEGINPROG Program
+    FOR x := 0 TO 5 DO
+        FOR x := 0 TO 5 DO
+            PRINT(x)
+        ENDFOR
+    ENDFOR
+    PRINT(x) // x does not exist in that scope
+ENDPROG

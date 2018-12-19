@@ -1,0 +1,4 @@
+BEGINPROG BadVariables
+PRINT(-1)
+VARIABLES a,b
+ENDPROG

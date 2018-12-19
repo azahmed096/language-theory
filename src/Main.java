@@ -31,7 +31,7 @@ public class Main {
 			Iterator<Symbol> iterator = symboles.iterator();
 			try{
 				ParseTree tree = new Parser(iterator).beginParse(cfg);
-				List<String> s = new CodeGenerator().generateProgram(tree, table);
+				List<String> s = new CodeGenerator().generateProgram(tree);
 				System.out.println(Java8util.Stringjoin("\n", s));
 				// BroTree lcrs = new BroTree(tree);
 				// BinaryTree bin = new BinaryConverter().fromBro(lcrs);

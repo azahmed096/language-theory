@@ -1,3 +1,4 @@
+// BONUS VARIABLE SCOOPING
 BEGINPROG Program
     VARIABLES x
     x := 42

@@ -4,17 +4,12 @@ import java.util.Map;
 
 public class ContextManager {
     private List<Context> contexts = new ArrayList<Context>();
-    private List<String> globales = new ArrayList<String>();
     private List<String> instructions;
     private Registers registers = new Registers();
 
-    public ContextManager(List<String> instructions, List<String> globales) {
-        this.instructions = instructions;
-        this.globales.addAll(globales);
-    }
-
     public ContextManager(List<String> instructions){
         this.instructions = instructions;
+        EnterContext(); // default context or global context
     }
 
     public void EnterContext() {
@@ -39,10 +34,6 @@ public class ContextManager {
             if (context.hasVariable(identifier)){
                 return context.getConvertedName(identifier);
             }
-        }
-        int index = globales.indexOf(identifier);
-        if (index != -1) {
-            return "%" + globales.get(index);
         }
         throw new RuntimeException("Undefined variable: " + identifier);
     }

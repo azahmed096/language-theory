@@ -1,0 +1,6 @@
+BEGINPROG Variables
+VARIABLES test
+    FOR x := 0 TO 5 DO
+        y := 5
+    ENDFOR
+ENDPROG

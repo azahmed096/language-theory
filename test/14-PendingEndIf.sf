@@ -1,0 +1,4 @@
+BEGINPROG PendingEndIf
+IF (a = 2) THEN
+ELSE
+ENDPROG
