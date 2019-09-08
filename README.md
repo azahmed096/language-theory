@@ -1,3 +1,6 @@
+# about
+This is a [school project](Part2.pdf) that consist of a compiler for a simple language. The output code is LLVM machine code.
+
 # à faire
 
 - [x] Vérifier l'access à des variables non-existantes
